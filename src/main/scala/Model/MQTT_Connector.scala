@@ -2,7 +2,7 @@ package Model
 
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, ClosedShape, Materializer}
+import akka.stream.ClosedShape
 import akka.stream.alpakka.mqtt.{MqttConnectionSettings, MqttMessage, MqttQoS, MqttSubscriptions}
 import akka.stream.alpakka.mqtt.scaladsl.MqttSource
 import akka.stream.scaladsl.{Flow, GraphDSL, RunnableGraph, Sink}
