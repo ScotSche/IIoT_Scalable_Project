@@ -1,26 +1,43 @@
 package View
 
-import Model.MQTT_Robot_Client
-import View.EventEnumeration.EventEnumeration
+import Controller.{RobotController, EventEnumeration}
+import _root_.Controller.EventEnumeration.EventEnumeration
+import Model.{MQTT_Robot_Client, Timer}
 
 import java.awt.{BasicStroke, Color}
 import java.awt.geom.Ellipse2D
 import scala.swing.{BoxPanel, Component, Dimension, Graphics2D, MainFrame, Orientation}
 import scala.swing.event.{Event, Key, KeyPressed}
 
-object EventEnumeration extends Enumeration {
-  type EventEnumeration = Value
-  val UP, DOWN, LEFT, RIGHT = Value
-}
-
 case class MoveEvent(event: EventEnumeration) extends Event
 
-case class RobotPosition(var x:Int = 50, var y:Int = 50)
+class Robot(controller: RobotController) extends MainFrame {
+  title = "Robotic Factory #1"
+  preferredSize = new Dimension(1000, 600)
 
-class RobotCanvas(robotPosition: RobotPosition) extends Component {
+  val robot = new MQTT_Robot_Client()
+  val canvas = new RobotCanvas(controller)
+
+  contents = new BoxPanel(Orientation.Vertical) {
+    contents += canvas
+  }
+
+  listenTo(canvas)
+  reactions += {
+    case MoveEvent(event: EventEnumeration) => {
+      if(event == EventEnumeration.UP) controller.updateManualSteeringRobotPosition(event, -25)
+      else if(event == EventEnumeration.DOWN) controller.updateManualSteeringRobotPosition(event, 25)
+      else if(event == EventEnumeration.LEFT) controller.updateManualSteeringRobotPosition(event, -25)
+      else if(event == EventEnumeration.RIGHT) controller.updateManualSteeringRobotPosition(event, 25)
+      canvas.repaint()
+    }
+
+  }
+}
+
+class RobotCanvas(controller: RobotController) extends Component {
 
   focusable = true
-  preferredSize = new Dimension(1000, 600)
 
   listenTo(keys)
   reactions += {
@@ -39,42 +56,8 @@ class RobotCanvas(robotPosition: RobotPosition) extends Component {
 
     g.setStroke(new BasicStroke(3f))
 
+    //  Manual robot drawing
     g.setColor(Color.darkGray)
-    g.draw(new Ellipse2D.Double(robotPosition.x, robotPosition.y, 50, 50))
-
+    g.draw(new Ellipse2D.Double(controller.manualSteeringRobotPosition.x, controller.manualSteeringRobotPosition.y, 50, 50))
   }
 }
-
-class Robot(robotPosition: RobotPosition) extends MainFrame {
-  title = "Robotic Factory #1"
-
-  val robot = new MQTT_Robot_Client()
-  val canvas = new RobotCanvas(robotPosition)
-
-  contents = new BoxPanel(Orientation.Vertical) {
-    contents += canvas
-  }
-
-  listenTo(canvas)
-  reactions += {
-    case MoveEvent(event: EventEnumeration) => {
-
-      if(event == EventEnumeration.UP) robotPosition.y -= 25
-      else if(event == EventEnumeration.DOWN) robotPosition.y += 25
-      else if(event == EventEnumeration.LEFT) robotPosition.x -= 25
-      else if(event == EventEnumeration.RIGHT) robotPosition.x += 25
-      robot.publish("X: " + robotPosition.x + " / " + robotPosition.y)
-      canvas.repaint()
-    }
-
-  }
-}
-
-object Robot {
-  def main(args: Array[String]): Unit = {
-    val robotPosition = RobotPosition()
-    val ui = new Robot(robotPosition)
-    ui.visible = true
-  }
-}
-

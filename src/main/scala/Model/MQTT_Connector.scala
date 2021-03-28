@@ -10,7 +10,7 @@ import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import java.util.Properties
 
-object MQTT_Connector {
+class MQTT_Connector {
 
   implicit val system: ActorSystem = ActorSystem()
 
@@ -53,11 +53,11 @@ object MQTT_Connector {
     ClosedShape
   }
 
-  def transformToKafka(mqttMessage: MqttMessage): ProducerRecord[String, String] = {
-    new ProducerRecord(TOPIC_METADATA, mqttMessage.topic, mqttMessage.payload.utf8String)
-  }
+  //  Start the transformation graph
+  RunnableGraph.fromGraph(graph).run()
 
-  def main(args: Array[String]): Unit = {
-    RunnableGraph.fromGraph(graph).run()
+  def transformToKafka(mqttMessage: MqttMessage): ProducerRecord[String, String] = {
+    print(mqttMessage.topic + " -> " + mqttMessage.payload.utf8String + " | ")
+    new ProducerRecord(TOPIC_METADATA, mqttMessage.topic, mqttMessage.payload.utf8String)
   }
 }

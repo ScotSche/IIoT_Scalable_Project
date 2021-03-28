@@ -1,19 +1,15 @@
 package View
 
+import Model.RobotPosition
+
 import java.awt.{BasicStroke, Color}
 import java.awt.geom.Ellipse2D
-import scala.swing.event.{Key, KeyPressed}
 import scala.swing.{BoxPanel, Component, Dimension, Graphics2D, MainFrame, Orientation}
 
-object FactoryDashboard {
-    def main(args: Array[String]): Unit = {
-      val ui = new Dashboard()
-      ui.visible = true
-    }
-}
+class FactoryDashboard extends MainFrame {
 
-class Dashboard extends MainFrame {
   title = "Robotic Factory #2"
+  preferredSize = new Dimension(1000, 600)
 
   val canvas = new DashboardCanvas()
 
@@ -22,10 +18,16 @@ class Dashboard extends MainFrame {
   }
 }
 
-class DashboardCanvas extends Component {
+class DashboardCanvas() extends Component {
 
   focusable = true
-  preferredSize = new Dimension(1000, 600)
+
+  var _robotPosition = RobotPosition()
+
+  def updateRobotPositions(robotPosition: RobotPosition): Unit ={
+    _robotPosition = robotPosition
+    this.repaint()
+  }
 
   override def paintComponent(g : Graphics2D) {
     g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
@@ -36,8 +38,8 @@ class DashboardCanvas extends Component {
 
     g.setStroke(new BasicStroke(3f))
 
-    g.setColor(Color.darkGray)
-    g.draw(new Ellipse2D.Double(50, 50, 50, 50))
+    g.setColor(Color.red)
+    g.draw(new Ellipse2D.Double(_robotPosition.x, _robotPosition.y, 50, 50))
   }
 }
 
