@@ -1,11 +1,14 @@
 package View
 
-import Controller.{RobotController, EventEnumeration}
+import Controller.{EventEnumeration, RobotController}
 import _root_.Controller.EventEnumeration.EventEnumeration
-import Model.{MQTT_Robot_Client, Timer}
+import Model.MQTT_Robot_Client
 
-import java.awt.{BasicStroke, Color}
-import java.awt.geom.Ellipse2D
+import java.awt.image.BufferedImage
+import java.awt.{BasicStroke, Color, Image}
+import java.io.File
+import javax.imageio.ImageIO
+import javax.swing.ImageIcon
 import scala.swing.{BoxPanel, Component, Dimension, Graphics2D, MainFrame, Orientation}
 import scala.swing.event.{Event, Key, KeyPressed}
 
@@ -39,6 +42,9 @@ class RobotCanvas(controller: RobotController) extends Component {
 
   focusable = true
 
+  var robotImage = new ImageIcon("src/images/robotimage.png").getImage()
+    .getScaledInstance(50, 50, Image.SCALE_DEFAULT)
+
   listenTo(keys)
   reactions += {
     case KeyPressed(_, pressedKey, _, _) =>
@@ -50,14 +56,13 @@ class RobotCanvas(controller: RobotController) extends Component {
   override def paintComponent(g : Graphics2D) {
     g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
       java.awt.RenderingHints.VALUE_ANTIALIAS_ON)
-    g.setColor(Color.lightGray);
+    //g.setColor(Color.lightGray);
     val d = size
     g.fillRect(0,0, d.width, d.height)
 
     g.setStroke(new BasicStroke(3f))
 
     //  Manual robot drawing
-    g.setColor(Color.darkGray)
-    g.draw(new Ellipse2D.Double(controller.manualSteeringRobotPosition.x, controller.manualSteeringRobotPosition.y, 50, 50))
+    g.drawImage(robotImage, controller.manualSteeringRobotPosition.x, controller.manualSteeringRobotPosition.y, null)
   }
 }
