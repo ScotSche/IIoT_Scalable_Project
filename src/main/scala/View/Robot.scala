@@ -3,11 +3,7 @@ package View
 import Controller.{EventEnumeration, RobotController}
 import _root_.Controller.EventEnumeration.EventEnumeration
 import Model.MQTT_Robot_Client
-
-import java.awt.image.BufferedImage
 import java.awt.{BasicStroke, Color, Image}
-import java.io.File
-import javax.imageio.ImageIO
 import javax.swing.ImageIcon
 import scala.swing.{BoxPanel, Component, Dimension, Graphics2D, MainFrame, Orientation}
 import scala.swing.event.{Event, Key, KeyPressed}
@@ -56,7 +52,7 @@ class RobotCanvas(controller: RobotController) extends Component {
   override def paintComponent(g : Graphics2D) {
     g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
       java.awt.RenderingHints.VALUE_ANTIALIAS_ON)
-    //g.setColor(Color.lightGray);
+    g.setColor(Color.lightGray);
     val d = size
     g.fillRect(0,0, d.width, d.height)
 

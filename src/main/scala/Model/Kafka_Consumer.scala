@@ -1,11 +1,8 @@
 package Model
 
-import Controller.DashboardController
-import org.apache.kafka.clients.consumer.{ConsumerRecords, KafkaConsumer}
-
+import org.apache.kafka.clients.consumer.KafkaConsumer
 import java.util.Properties
 import java.util
-import scala.jdk.CollectionConverters.iterableAsScalaIterableConverter
 
 class Kafka_Consumer {
 

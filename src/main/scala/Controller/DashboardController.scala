@@ -1,9 +1,8 @@
 package Controller
 
-import Model.{Kafka_Consumer, MQTT_Connector, RobotPosition}
+import Model.{Kafka_Consumer, RobotPosition}
 import View.FactoryDashboard
 import org.apache.kafka.clients.consumer.ConsumerRecords
-
 import scala.jdk.CollectionConverters.iterableAsScalaIterableConverter
 
 class DashboardController(dashboardView: FactoryDashboard) {
