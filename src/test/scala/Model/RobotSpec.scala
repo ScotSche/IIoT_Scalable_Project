@@ -23,14 +23,24 @@ class RobotSpec extends AnyWordSpec with Matchers{
         target.maxPosition should be(RobotPosition(100, 100))
       }
 
-      "change position if new position is valid" in {
-        target.changePosition(RobotPosition(75, 75))
-        target.position should be(RobotPosition(75, 75))
+      "change X position if new X position is valid" in {
+        target.changeXPosition(25)
+        target.position.x should be(75)
       }
 
-      "do not change position if new position is invalid" in {
-        target.changePosition(RobotPosition(150, 150))
-        target.position should be(RobotPosition(75, 75))
+      "do not change X position if new X position is invalid" in {
+        target.changeXPosition(100)
+        target.position.x should be(75)
+      }
+
+      "change Y position if new Y position is valid" in {
+        target.changeYPosition(25)
+        target.position.y should be(75)
+      }
+
+      "do not change Y position if new Y position is invalid" in {
+        target.changeYPosition(100)
+        target.position.y should be(75)
       }
     }
   }

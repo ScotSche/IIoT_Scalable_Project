@@ -59,6 +59,6 @@ class RobotCanvas(controller: RobotController) extends Component {
     g.setStroke(new BasicStroke(3f))
 
     //  Manual robot drawing
-    g.drawImage(robotImage, controller.manualSteeringRobotPosition.x, controller.manualSteeringRobotPosition.y, null)
+    g.drawImage(robotImage, controller.manual_Robot.position.x, controller.manual_Robot.position.y, null)
   }
 }
