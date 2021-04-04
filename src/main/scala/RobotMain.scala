@@ -1,5 +1,5 @@
 import Controller.RobotController
-import View.Robot
+import View.FactoryRobot
 
 object RobotMain {
 
@@ -7,7 +7,7 @@ object RobotMain {
   val controller: RobotController = new RobotController()
 
   //  Views
-  val robotView: Robot = new Robot(controller)
+  val robotView: FactoryRobot = new FactoryRobot(controller)
 
   def main(args: Array[String]) = {
     robotView.visible = true

@@ -5,7 +5,7 @@ import Model.{MQTT_Robot_Client, RobotPosition, Timer}
 
 class RobotController{
 
-  var manualSteeringRobotPosition: RobotPosition = RobotPosition()
+  var manualSteeringRobotPosition: RobotPosition = RobotPosition(50, 50)
   val mqttRobotClient = new MQTT_Robot_Client()
 
   Timer(2000) {
@@ -14,7 +14,7 @@ class RobotController{
   }
 
   def updateManualSteeringRobotPosition(event: EventEnumeration, value: Int): Unit = {
-    if(event == EventEnumeration.UP || event == EventEnumeration.DOWN) { manualSteeringRobotPosition.y += value }
-    else { manualSteeringRobotPosition.x += value }
+    if(event == EventEnumeration.UP || event == EventEnumeration.DOWN) { }//manualSteeringRobotPosition.y += value }
+    else { }//manualSteeringRobotPosition.x += value }
   }
 }

@@ -7,7 +7,7 @@ import scala.jdk.CollectionConverters.iterableAsScalaIterableConverter
 
 class DashboardController(dashboardView: FactoryDashboard) {
 
-  var manualSteeringRobotPosition: RobotPosition = RobotPosition()
+  var manualSteeringRobotPosition: RobotPosition = RobotPosition(50, 50)
 
   //  View Object
   val _dashBoardView = dashboardView

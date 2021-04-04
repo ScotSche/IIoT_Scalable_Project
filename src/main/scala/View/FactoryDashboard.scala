@@ -22,7 +22,7 @@ class DashboardCanvas() extends Component {
 
   focusable = true
 
-  var _robotPosition = RobotPosition()
+  var _robotPosition = RobotPosition(50, 50)
 
   def updateRobotPositions(robotPosition: RobotPosition): Unit ={
     _robotPosition = robotPosition

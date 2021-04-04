@@ -10,7 +10,7 @@ import scala.swing.event.{Event, Key, KeyPressed}
 
 case class MoveEvent(event: EventEnumeration) extends Event
 
-class Robot(controller: RobotController) extends MainFrame {
+class FactoryRobot(controller: RobotController) extends MainFrame {
   title = "Robotic Factory #1"
   preferredSize = new Dimension(1000, 600)
 
