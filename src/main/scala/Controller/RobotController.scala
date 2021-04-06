@@ -1,8 +1,8 @@
 package Controller
 
 import Controller.EventEnumeration.EventEnumeration
-import Model.Robot.{AutonomousRobot, ManualRobot}
-import Model.{RobotPosition, Timer}
+import Model.Robot.{AutonomousRobot, ManualRobot, RobotPosition}
+import Model.Timer
 
 import java.awt.Image
 import java.time.LocalDateTime

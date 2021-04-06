@@ -1,6 +1,8 @@
 package Model
 
+import Model.Robot.RobotPosition
 import org.apache.kafka.clients.consumer.KafkaConsumer
+
 import java.util.Properties
 import java.util
 
@@ -9,7 +11,7 @@ class Kafka_Consumer {
   val  props: Properties = new Properties()
   props.put("bootstrap.servers", "localhost:9092")
   props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
-  props.put("value.deserializer", "Model.MessageDeserializer")
+  props.put("value.deserializer", "Model.Serializer.MessageDeserializer")
   props.put("group.id", "something")
 
   val consumer: KafkaConsumer[String, RobotPosition] = new KafkaConsumer[String, RobotPosition](props)

@@ -1,6 +1,6 @@
 package View
 
-import Model.RobotPosition
+import Model.Robot.RobotPosition
 
 import java.awt.{BasicStroke, Color}
 import java.awt.geom.Ellipse2D

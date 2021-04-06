@@ -1,6 +1,5 @@
 package Model.Robot
 
-import Model.RobotPosition
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

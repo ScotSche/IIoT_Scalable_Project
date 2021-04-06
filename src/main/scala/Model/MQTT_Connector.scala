@@ -1,5 +1,6 @@
 package Model
 
+import Model.Robot.RobotPosition
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.ClosedShape
@@ -29,7 +30,7 @@ class MQTT_Connector {
   val props: Properties = new Properties()
   props.put("bootstrap.servers", "localhost:9092")
   props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
-  props.put("value.serializer", "Model.MessageSerializer")
+  props.put("value.serializer", "Model.Serializer.MessageSerializer")
 
   val producer: KafkaProducer[String, RobotPosition] = new KafkaProducer[String, RobotPosition](props)
   val TOPIC_METADATA: String = "robot_positioning"

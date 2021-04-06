@@ -1,9 +1,11 @@
-package Model
+package Model.Serializer
 
-import java.util
+import Model.Robot.RobotPosition
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaObjectMapper}
 import org.apache.kafka.common.serialization.Serializer
+
+import java.util
 
 class MessageSerializer extends Serializer[RobotPosition]{
   override def configure(configs: util.Map[String, _], isKey: Boolean): Unit = {

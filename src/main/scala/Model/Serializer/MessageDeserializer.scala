@@ -1,9 +1,11 @@
-package Model
+package Model.Serializer
 
-import java.util
+import Model.Robot.RobotPosition
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaObjectMapper}
 import org.apache.kafka.common.serialization.Deserializer
+
+import java.util
 import scala.util.{Failure, Success, Try}
 
 class MessageDeserializer extends Deserializer[RobotPosition]{

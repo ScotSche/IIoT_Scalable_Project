@@ -1,6 +1,7 @@
 package Controller
 
-import Model.{Kafka_Consumer, RobotPosition}
+import Model.Kafka_Consumer
+import Model.Robot.RobotPosition
 import View.FactoryDashboard
 import org.apache.kafka.clients.consumer.ConsumerRecords
 
