@@ -22,6 +22,19 @@ class RobotControllerSpec extends AnyWordSpec with Matchers {
         target.autonomousRobots.size should be(4)
       }
 
+      "should change downMovement if robot is in min position" in {
+        target.autonomousRobots(0).downMovement should be(true)
+        target.autonomousRobots(0).currentPosition = RobotPosition(200, 550, null)
+        Thread.sleep(1000)
+        target.autonomousRobots(0).downMovement should be(false)
+      }
+      "should change downMovement if robot is in max position" in {
+        target.autonomousRobots(0).downMovement should be(false)
+        target.autonomousRobots(0).currentPosition = RobotPosition(200, 0, null)
+        Thread.sleep(1000)
+        target.autonomousRobots(0).downMovement should be(true)
+      }
+
       "should be able to update the manual robot position vertically" in {
         target.updateManualSteeringRobotPosition(EventEnumeration.UP, 25)
         target.manual_Robot.currentPosition.y should be(75)
