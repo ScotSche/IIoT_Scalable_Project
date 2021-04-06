@@ -15,6 +15,18 @@ class SerializerSpec extends AnyWordSpec with Matchers {
       val timestampISO = LocalDateTime.now().toString
       val serializedTarget = RobotPosition(50, 50, timestampISO)
 
+      "Serializer should be initialized" in {
+        targetSerializer.configure(null, true)
+      }
+      "Serializer should return null if data is null" in {
+        val result = targetSerializer.serialize("Topic", null)
+        result should be(null)
+      }
+
+      "Deserializer should be initialized" in {
+        targetDeserializer.configure(null, true)
+      }
+
       "serialize specific data and deserialize it again" in {
         val result = targetDeserializer.deserialize("Topic", targetSerializer.serialize("Topic", serializedTarget))
         result should be(serializedTarget)
