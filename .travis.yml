@@ -2,10 +2,6 @@ language: scala
 scala:
   - 2.13.5
 
-env:
-  global:
-    - IGNORE_PATHS=src/main/scala/Mill.scala
-
 script:
   - sbt clean coverage test coverageReport
 

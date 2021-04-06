@@ -1,8 +1,10 @@
 package View
 
 import Controller.{EventEnumeration, RobotController}
+import Model.Robot.Robot
 import _root_.Controller.EventEnumeration.EventEnumeration
-import Model.{Robot, Timer}
+import Model.Timer
+
 import java.awt.{BasicStroke, Color, Image}
 import scala.swing.{BoxPanel, Component, Dimension, Graphics2D, MainFrame, Orientation}
 import scala.swing.event.{Event, Key, KeyPressed}
@@ -59,9 +61,9 @@ class RobotCanvas(controller: RobotController) extends Component {
     g.setStroke(new BasicStroke(3f))
 
     //  Manual robot drawing
-    g.drawImage(controller.manual_Robot.image, controller.manual_Robot.position.x, controller.manual_Robot.position.y, null)
+    g.drawImage(controller.manual_Robot.image, controller.manual_Robot.currentPosition.x, controller.manual_Robot.currentPosition.y, null)
 
     // Autonomous robots drawing
-    controller.autonomousRobots.foreach{ rbt: Robot => g.drawImage(rbt.image, rbt.position.x, rbt.position.y, null) }
+    controller.autonomousRobots.foreach{ rbt: Robot => g.drawImage(rbt.image, rbt.currentPosition.x, rbt.currentPosition.y, null) }
   }
 }
