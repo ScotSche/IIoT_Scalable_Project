@@ -7,16 +7,16 @@ import org.scalatest.wordspec.AnyWordSpec
 import java.time.LocalDateTime
 import javax.swing.ImageIcon
 
-class ManualRobotSpec extends AnyWordSpec with Matchers {
-  "A manual robot" when {
+class AutonomousRobotSpec extends AnyWordSpec with Matchers {
+  "An autonomous robot" when {
     "new initialized" should {
-      val target: ManualRobot = new ManualRobot("Robot Manual", new ImageIcon("src/images/robotimage.png").getImage(),
-        RobotPosition(0, 0, null), RobotPosition(100, 100, null), RobotPosition(50, 50, null))
+      val target: AutonomousRobot = new AutonomousRobot("Robot Autonomous", new ImageIcon("src/images/robotimage.png").getImage(),
+        RobotPosition(0, 0, null), RobotPosition(100, 100, null), RobotPosition(50, 50, null), false)
 
       var timestampValid: LocalDateTime = null
 
       "have a specific name" in {
-        target.name should be("Robot Manual")
+        target.name should be("Robot Autonomous")
       }
       "have a specific min position" in {
         target.minPosition should be(RobotPosition(0, 0, null))
@@ -26,6 +26,9 @@ class ManualRobotSpec extends AnyWordSpec with Matchers {
       }
       "have a specific current position" in {
         target.currentPosition should be(RobotPosition(50, 50, null))
+      }
+      "have an indicator if moving down" in {
+        target.downMovement should be(false)
       }
       "have a mqtt client" in {
         target.mqttRobotClient should not be(null)

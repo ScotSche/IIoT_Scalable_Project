@@ -4,8 +4,8 @@ import Model.{MQTT_Robot_Client, RobotPosition}
 
 import java.awt.Image
 
-class AutonomousRobot(val name: String, val image: Image, val minPosition: RobotPosition,
-                      val maxPosition: RobotPosition, var currentPosition: RobotPosition,
+class AutonomousRobot(override val name: String, override val image: Image, override val minPosition: RobotPosition,
+                      override val maxPosition: RobotPosition, override var currentPosition: RobotPosition,
                       var downMovement: Boolean) extends Robot{
 
   val mqttRobotClient = new MQTT_Robot_Client(name)
