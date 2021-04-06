@@ -8,8 +8,12 @@ class RobotSpec extends AnyWordSpec with Matchers{
   "A Robot" when {
     "new initialized" should {
 
-      val target = Robot(new ImageIcon("src/images/robotimage.png").getImage(),
+      val target = Robot("Robot_Name", new ImageIcon("src/images/robotimage.png").getImage(),
         RobotPosition(0, 0), RobotPosition(100, 100), RobotPosition(50, 50))
+
+      "have the name Robot_Name" in {
+        target.name should be("Robot_Name")
+      }
 
       "have initial position 50, 50" in {
         target.position should be(RobotPosition(50, 50))

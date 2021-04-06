@@ -2,9 +2,8 @@ package View
 
 import Controller.{EventEnumeration, RobotController}
 import _root_.Controller.EventEnumeration.EventEnumeration
-import Model.MQTT_Robot_Client
+import Model.{Robot, Timer}
 import java.awt.{BasicStroke, Color, Image}
-import javax.swing.ImageIcon
 import scala.swing.{BoxPanel, Component, Dimension, Graphics2D, MainFrame, Orientation}
 import scala.swing.event.{Event, Key, KeyPressed}
 
@@ -14,7 +13,6 @@ class FactoryRobot(controller: RobotController) extends MainFrame {
   title = "Robotic Factory #1"
   preferredSize = new Dimension(1000, 600)
 
-  val robot = new MQTT_Robot_Client()
   val canvas = new RobotCanvas(controller)
 
   contents = new BoxPanel(Orientation.Vertical) {
@@ -30,7 +28,9 @@ class FactoryRobot(controller: RobotController) extends MainFrame {
       else if(event == EventEnumeration.RIGHT) controller.updateManualSteeringRobotPosition(event, 25)
       canvas.repaint()
     }
-
+  }
+  Timer(1000){
+    canvas.repaint()
   }
 }
 
@@ -38,7 +38,7 @@ class RobotCanvas(controller: RobotController) extends Component {
 
   focusable = true
 
-  var robotImage = new ImageIcon("src/images/robotimage.png").getImage()
+  controller.manual_Robot.image
     .getScaledInstance(50, 50, Image.SCALE_DEFAULT)
 
   listenTo(keys)
@@ -59,6 +59,9 @@ class RobotCanvas(controller: RobotController) extends Component {
     g.setStroke(new BasicStroke(3f))
 
     //  Manual robot drawing
-    g.drawImage(robotImage, controller.manual_Robot.position.x, controller.manual_Robot.position.y, null)
+    g.drawImage(controller.manual_Robot.image, controller.manual_Robot.position.x, controller.manual_Robot.position.y, null)
+
+    // Autonomous robots drawing
+    controller.autonomousRobots.foreach{ rbt: Robot => g.drawImage(rbt.image, rbt.position.x, rbt.position.y, null) }
   }
 }

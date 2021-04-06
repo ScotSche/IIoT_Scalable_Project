@@ -3,11 +3,13 @@ package Controller
 import Model.{Kafka_Consumer, RobotPosition}
 import View.FactoryDashboard
 import org.apache.kafka.clients.consumer.ConsumerRecords
+
+import scala.collection.mutable
 import scala.jdk.CollectionConverters.iterableAsScalaIterableConverter
 
 class DashboardController(dashboardView: FactoryDashboard) {
 
-  var manualSteeringRobotPosition: RobotPosition = RobotPosition(50, 50)
+  var robotPositions = Map[String, RobotPosition]()
 
   //  View Object
   val _dashBoardView = dashboardView
@@ -24,13 +26,14 @@ class DashboardController(dashboardView: FactoryDashboard) {
         val msg = record.value()
         val tmpArray = msg.split(",")
         if (tmpArray.length == 2){
-          updateManualSteeringRobotPosition(RobotPosition(tmpArray(0).toInt, tmpArray(1).toInt))
+          robotPositions += (record.key() -> RobotPosition(tmpArray(0).toInt, tmpArray(1).toInt))
+          updateRobotPositions()
         }
       }
     }
   }
 
-  def updateManualSteeringRobotPosition(robotPosition: RobotPosition): Unit = {
-    dashboardView.canvas.updateRobotPositions(robotPosition)
+  def updateRobotPositions(): Unit = {
+    dashboardView.canvas.updateRobots(robotPositions)
   }
 }

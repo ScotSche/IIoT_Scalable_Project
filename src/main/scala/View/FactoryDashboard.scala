@@ -4,6 +4,7 @@ import Model.RobotPosition
 
 import java.awt.{BasicStroke, Color}
 import java.awt.geom.Ellipse2D
+import scala.collection.mutable
 import scala.swing.{BoxPanel, Component, Dimension, Graphics2D, MainFrame, Orientation}
 
 class FactoryDashboard extends MainFrame {
@@ -22,10 +23,10 @@ class DashboardCanvas() extends Component {
 
   focusable = true
 
-  var _robotPosition = RobotPosition(50, 50)
+  var _robotPositions = Map[String, RobotPosition]()
 
-  def updateRobotPositions(robotPosition: RobotPosition): Unit ={
-    _robotPosition = robotPosition
+  def updateRobots(robotMap: Map[String, RobotPosition]): Unit = {
+    _robotPositions = robotMap
     this.repaint()
   }
 
@@ -39,7 +40,8 @@ class DashboardCanvas() extends Component {
     g.setStroke(new BasicStroke(3f))
 
     g.setColor(Color.red)
-    g.draw(new Ellipse2D.Double(_robotPosition.x, _robotPosition.y, 50, 50))
+
+    _robotPositions.foreach{ case (key, value) => g.draw(new Ellipse2D.Double(value.x, value.y, 50, 50)) }
   }
 }
 

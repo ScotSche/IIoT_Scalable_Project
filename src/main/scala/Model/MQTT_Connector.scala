@@ -21,7 +21,7 @@ class MQTT_Connector {
     new MemoryPersistence // (3)
   )
 
-  val MQTT_TOPIC = "roboter_one_position"
+  val MQTT_TOPIC = "robotfactory/positions/#"
 
   //  Kafka Properties
   val props: Properties = new Properties()
@@ -31,7 +31,6 @@ class MQTT_Connector {
 
   val producer: KafkaProducer[String, String] = new KafkaProducer[String, String](props)
   val TOPIC_METADATA: String = "robot_positioning"
-  val KEY_METADATA: String = "robot_one_data"
 
   val graph = GraphDSL.create() { implicit builder: GraphDSL.Builder[NotUsed] =>
 

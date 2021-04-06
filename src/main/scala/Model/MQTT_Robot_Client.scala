@@ -10,23 +10,24 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 
 import scala.concurrent.Future
 
-class MQTT_Robot_Client {
+class MQTT_Robot_Client(name: String) {
 
   implicit val system: ActorSystem = ActorSystem()
 
-  val MQTT_TOPIC = "roboter_one_position"
+  val MQTT_BASIC_LEVEL = "robotfactory/positions/"
 
   val connectionSettings = MqttConnectionSettings(
     "tcp://localhost:1883",
-    "roboter-one-client",
+    name,
     new MemoryPersistence
   )
 
   val sink: Sink[MqttMessage, Future[Done]] = MqttSink(connectionSettings, MqttQoS.AtLeastOnce)
 
   def publish(payload:String) = {
+    val MQTT_TOPIC = MQTT_BASIC_LEVEL + name
     val messages = List(MqttMessage(MQTT_TOPIC, ByteString(payload)))
     Source(messages).runWith(sink)
-    println("MQTT position message sent!")
+    println(name + ": MQTT position message sent!")
   }
 }
