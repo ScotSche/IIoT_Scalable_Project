@@ -14,21 +14,19 @@ class DashboardController(dashboardView: FactoryDashboard) {
   //  View Object
   val _dashBoardView = dashboardView
 
-  //  Message consuption in Kafka
+  //  Message consumption in Kafka
   val kafka_Consumer = new Kafka_Consumer()
 
   def start(): Unit = {
     while(true){
       println("polling...")
-      val records: ConsumerRecords[String, String] = kafka_Consumer.consumer.poll(1000)
+      val records: ConsumerRecords[String, RobotPosition] = kafka_Consumer.consumer.poll(1000)
       for (record<-records.asScala){
-        print("MESSAGE: " + record.topic() + " - " + record.key() + " -> " + record.value())
-        val msg = record.value()
-        val tmpArray = msg.split(",")
-        if (tmpArray.length == 2){
-          robotPositions += (record.key() -> RobotPosition(tmpArray(0).toInt, tmpArray(1).toInt))
-          updateRobotPositions()
-        }
+        //print("MESSAGE: " + record.topic() + " - " + record.key() + " -> " + record.value())
+        val newRobotPosition = record.value()
+        robotPositions += (record.key() -> newRobotPosition)
+        println("Positions: " + robotPositions)
+        updateRobotPositions()
       }
     }
   }

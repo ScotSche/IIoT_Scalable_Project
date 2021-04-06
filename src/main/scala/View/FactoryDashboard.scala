@@ -4,7 +4,10 @@ import Model.RobotPosition
 
 import java.awt.{BasicStroke, Color}
 import java.awt.geom.Ellipse2D
-import scala.collection.mutable
+import java.time.LocalDateTime
+import java.time._
+import java.time.temporal.ChronoUnit
+import scala.concurrent.duration.Duration
 import scala.swing.{BoxPanel, Component, Dimension, Graphics2D, MainFrame, Orientation}
 
 class FactoryDashboard extends MainFrame {
@@ -39,9 +42,17 @@ class DashboardCanvas() extends Component {
 
     g.setStroke(new BasicStroke(3f))
 
-    g.setColor(Color.red)
+    _robotPositions.foreach{ case (key, value) =>
 
-    _robotPositions.foreach{ case (key, value) => g.draw(new Ellipse2D.Double(value.x, value.y, 50, 50)) }
+      val timeDifference = LocalDateTime.parse(value.timeStampISO).until(LocalDateTime.now(), ChronoUnit.SECONDS)
+      if(timeDifference >= 5){
+        g.setColor(Color.red)
+      }
+      else{
+        g.setColor(Color.green)
+      }
+      g.draw(new Ellipse2D.Double(value.x, value.y, 50, 50))
+    }
   }
 }
 

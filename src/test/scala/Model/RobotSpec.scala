@@ -9,41 +9,41 @@ class RobotSpec extends AnyWordSpec with Matchers{
     "new initialized" should {
 
       val target = Robot("Robot_Name", new ImageIcon("src/images/robotimage.png").getImage(),
-        RobotPosition(0, 0), RobotPosition(100, 100), RobotPosition(50, 50))
+        RobotPosition(0, 0, null), RobotPosition(100, 100, null), false, RobotPosition(50, 50, null))
 
       "have the name Robot_Name" in {
         target.name should be("Robot_Name")
       }
 
       "have initial position 50, 50" in {
-        target.position should be(RobotPosition(50, 50))
+        target.position should be(RobotPosition(50, 50, null))
       }
 
       "have min position 0, 0" in {
-        target.minPosition should be(RobotPosition(0, 0))
+        target.minPosition should be(RobotPosition(0, 0, null))
       }
 
       "have max position 100, 100" in {
-        target.maxPosition should be(RobotPosition(100, 100))
+        target.maxPosition should be(RobotPosition(100, 100, null))
       }
 
       "change X position if new X position is valid" in {
-        target.changeXPosition(25)
+        target.changeXPosition(25, null)
         target.position.x should be(75)
       }
 
       "do not change X position if new X position is invalid" in {
-        target.changeXPosition(100)
+        target.changeXPosition(100, null)
         target.position.x should be(75)
       }
 
       "change Y position if new Y position is valid" in {
-        target.changeYPosition(25)
+        target.changeYPosition(25, null)
         target.position.y should be(75)
       }
 
       "do not change Y position if new Y position is invalid" in {
-        target.changeYPosition(100)
+        target.changeYPosition(100, null)
         target.position.y should be(75)
       }
     }

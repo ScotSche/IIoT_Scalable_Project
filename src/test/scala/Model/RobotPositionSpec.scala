@@ -6,7 +6,7 @@ import org.scalatest.wordspec.AnyWordSpec
 class RobotPositionSpec extends AnyWordSpec with Matchers {
   "A Robot position" when {
     "when initialized" should {
-      val target = RobotPosition(50, 50)
+      val target = RobotPosition(50, 50, null)
 
       "have the position 50, 50" in {
         target.x should be(50)
