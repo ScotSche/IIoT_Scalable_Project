@@ -43,7 +43,6 @@ class RobotController{
     else{
       autonomousRobots(0).changeYPosition(-25, LocalDateTime.now())
     }
-    val mqttPayload = manual_Robot.position.x + "," + manual_Robot.position.y
     autonomousRobots(0).mqtt_publish()
   }
 
