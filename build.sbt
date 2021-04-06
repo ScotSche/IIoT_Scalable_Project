@@ -17,6 +17,4 @@ libraryDependencies ++= Seq(
 
 libraryDependencies += "org.apache.kafka" %% "kafka" % "2.6.0"
 
-coverageExcludedPackages += ".*ControllerMain.*"
-coverageExcludedPackages += ".*DashboardMain.*"
-coverageExcludedPackages += ".*RobotMain.*"
+coverageExcludedPackages := ".*ControllerMain.*;.*DashboardMain.*;.*RobotMain.*"
