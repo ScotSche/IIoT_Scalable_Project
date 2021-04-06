@@ -5,7 +5,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class DashboardControllerSpec extends AnyWordSpec with Matchers {
-  "A dahsboard controll" when {
+  "A dashboard controller" when {
     "initialized" should {
       val dashboardView = new FactoryDashboard
       val target = new DashboardController(dashboardView)
@@ -19,9 +19,6 @@ class DashboardControllerSpec extends AnyWordSpec with Matchers {
 
       "should be able to force update the robot positions in view" in {
         target.updateRobotPositions()
-      }
-      "should be able to start a kafka session" in {
-        //target.start()
       }
     }
   }
