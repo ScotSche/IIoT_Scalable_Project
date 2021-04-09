@@ -1,3 +1,3 @@
 package Model.Robot
 
-case class RobotPosition(x: Int, y: Int, timeStampISO: String)
+case class RobotPosition(var x: Int, var y: Int, var timeStampISO: String)

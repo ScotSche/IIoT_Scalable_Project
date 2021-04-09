@@ -1,19 +1,19 @@
 package View
 
 import Model.Robot.RobotPosition
+import Model.Timer
 
-import java.awt.{BasicStroke, Color}
+import java.awt.{BasicStroke, Color, Image}
 import java.awt.geom.Ellipse2D
 import java.time.LocalDateTime
-import java.time._
 import java.time.temporal.ChronoUnit
-import scala.concurrent.duration.Duration
+import javax.swing.ImageIcon
 import scala.swing.{BoxPanel, Component, Dimension, Graphics2D, MainFrame, Orientation}
 
 class FactoryDashboard extends MainFrame {
 
   title = "Robotic Factory #2"
-  preferredSize = new Dimension(1000, 600)
+  preferredSize = new Dimension(900, 900)
 
   val canvas = new DashboardCanvas()
 
@@ -26,6 +26,9 @@ class DashboardCanvas() extends Component {
 
   focusable = true
 
+  val factoryImage = new ImageIcon("src/images/factoryimage.jpeg").getImage()
+    .getScaledInstance(800, 800, Image.SCALE_DEFAULT)
+
   var _robotPositions = Map[String, RobotPosition]()
 
   def updateRobots(robotMap: Map[String, RobotPosition]): Unit = {
@@ -33,12 +36,16 @@ class DashboardCanvas() extends Component {
     this.repaint()
   }
 
+  Timer(1000){
+    this.repaint()
+  }
+
   override def paintComponent(g : Graphics2D) {
     g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
       java.awt.RenderingHints.VALUE_ANTIALIAS_ON)
-    g.setColor(Color.lightGray);
+
     val d = size
-    g.fillRect(0,0, d.width, d.height)
+    g.drawImage(factoryImage, (d.width - 800) / 2, (d.height - 800) / 2, null)
 
     g.setStroke(new BasicStroke(3f))
 

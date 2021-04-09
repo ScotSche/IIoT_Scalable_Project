@@ -27,7 +27,7 @@ class MQTT_Robot_Client(name: String) {
 
   def publish(payload:String) = {
     val MQTT_TOPIC = MQTT_BASIC_LEVEL + name
-    val MQTT_PAYLOAD = payload + "," + LocalDateTime.now()
+    val MQTT_PAYLOAD = payload
     val messages = List(MqttMessage(MQTT_TOPIC, ByteString(MQTT_PAYLOAD)))
     Source(messages).runWith(sink)
     println(name + ": MQTT message sent - " + MQTT_PAYLOAD)

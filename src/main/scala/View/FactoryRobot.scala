@@ -1,11 +1,11 @@
 package View
 
 import Controller.{EventEnumeration, RobotController}
-import Model.Robot.Robot
+import Model.Robot.{AutonomousRobot, RobotPosition}
 import _root_.Controller.EventEnumeration.EventEnumeration
 import Model.Timer
-
-import java.awt.{BasicStroke, Color, Image}
+import java.awt.{BasicStroke, Image}
+import javax.swing.ImageIcon
 import scala.swing.{BoxPanel, Component, Dimension, Graphics2D, MainFrame, Orientation}
 import scala.swing.event.{Event, Key, KeyPressed}
 
@@ -13,7 +13,8 @@ case class MoveEvent(event: EventEnumeration) extends Event
 
 class FactoryRobot(controller: RobotController) extends MainFrame {
   title = "Robotic Factory #1"
-  preferredSize = new Dimension(1000, 600)
+
+  preferredSize = new Dimension(900, 900)
 
   val canvas = new RobotCanvas(controller)
 
@@ -39,9 +40,8 @@ class FactoryRobot(controller: RobotController) extends MainFrame {
 class RobotCanvas(controller: RobotController) extends Component {
 
   focusable = true
-
-  controller.manual_Robot.image
-    .getScaledInstance(50, 50, Image.SCALE_DEFAULT)
+  val factoryImage = new ImageIcon("src/images/factoryimage.jpeg").getImage()
+    .getScaledInstance(800, 800, Image.SCALE_DEFAULT)
 
   listenTo(keys)
   reactions += {
@@ -51,19 +51,42 @@ class RobotCanvas(controller: RobotController) extends Component {
       else if(pressedKey == Key.Left) publish(MoveEvent(EventEnumeration.LEFT))
       else if(pressedKey == Key.Right) publish(MoveEvent(EventEnumeration.RIGHT))
   }
+
   override def paintComponent(g : Graphics2D) {
     g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,
       java.awt.RenderingHints.VALUE_ANTIALIAS_ON)
-    g.setColor(Color.lightGray);
+
     val d = size
-    g.fillRect(0,0, d.width, d.height)
+    g.drawImage(factoryImage, (d.width - 800) / 2, (d.height - 800) / 2, null)
 
     g.setStroke(new BasicStroke(3f))
 
     //  Manual robot drawing
-    g.drawImage(controller.manual_Robot.image, controller.manual_Robot.currentPosition.x, controller.manual_Robot.currentPosition.y, null)
+    //g.drawImage(controller.manual_Robot.image_Full, controller.manual_Robot.currentPosition.x, controller.manual_Robot.currentPosition.y, null)
+    g.drawImage(controller.robotImageFull, controller.manual_Robot_Position.x, controller.manual_Robot_Position.y, null)
 
     // Autonomous robots drawing
-    controller.autonomousRobots.foreach{ rbt: Robot => g.drawImage(rbt.image, rbt.currentPosition.x, rbt.currentPosition.y, null) }
+    controller.autonomousRobots.foreach{
+      autonomousRobot: (AutonomousRobot, RobotPosition) => {
+        var image = new ImageIcon().getImage
+        if(autonomousRobot._1.vertical){
+          if(autonomousRobot._1.reverseMovement){
+            image = controller.robotImageEmpty
+          }
+          else{
+            image = controller.robotImageFull
+          }
+        }
+        else{
+          if(autonomousRobot._1.reverseMovement){
+            image = controller.robotImageEmpty
+          }
+          else{
+            image = controller.robotImageFull
+          }
+        }
+        g.drawImage(image, autonomousRobot._2.x, autonomousRobot._2.y, null)
+      }
+    }
   }
 }

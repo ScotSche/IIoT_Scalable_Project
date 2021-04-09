@@ -9,6 +9,7 @@ object RobotMain {
   //  Views
   val robotView: FactoryRobot = new FactoryRobot(controller)
 
+  //  Main loop
   def main(args: Array[String]) = {
     robotView.visible = true
   }

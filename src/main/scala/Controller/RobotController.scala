@@ -1,62 +1,107 @@
 package Controller
 
 import Controller.EventEnumeration.EventEnumeration
-import Model.Robot.{AutonomousRobot, ManualRobot, RobotPosition}
+import Model.Locator.Locator
+import Model.Robot.{AutonomousRobot, ManualRobot, Robot, RobotPosition}
 import Model.Timer
-
-import java.awt.Image
+import scala.math._
+import java.awt.{Graphics2D, Image}
 import java.time.LocalDateTime
 import javax.swing.ImageIcon
 
+//  http://walter.bislins.ch/blog/index.asp?page=Schnittpunkte+zweier+Kreise+berechnen+%28JavaScript%29#H_Rechenformular
+
 class RobotController{
 
-  var robotImage = new ImageIcon("src/images/robotimage_DARK.png").getImage()
+  // Triangulation Stations
+  var stations: List[Locator] = List(new Locator("Station 1", (0, 0)), new Locator("Station 2", (900, 0)),
+    new Locator("Station 3", (450, 900)))
+
+  //val stations: List[(Int, Int)] = List((0, 0), (900, 0), (450, 900))
+
+  //  Robot images
+  val robotImageFull = new ImageIcon("src/images/LogBOT4.0_Voll.png").getImage()
+    .getScaledInstance(50, 50, Image.SCALE_DEFAULT)
+  val robotImageEmpty = new ImageIcon("src/images/LogBOT4.0_Leer.png").getImage()
     .getScaledInstance(50, 50, Image.SCALE_DEFAULT)
 
-  var manual_Robot = new ManualRobot("robot_manual", robotImage, RobotPosition(0, 0, null),
-    RobotPosition(950, 550, null), RobotPosition(50, 50, null))
+  // Manual Robot Position
+  var manual_Robot_Position = RobotPosition(650, 750, null)
+  var manual_Robot_Position_OLD = manual_Robot_Position
 
-  var manual_Robot_Position_OLD = manual_Robot.currentPosition
+  //  Definition of manual robot
+  var manual_Robot = new ManualRobot("robot_manual", null, null)
 
+  //  Definition of autonomous robots
   var autonomousRobots = List(
-    new AutonomousRobot("robot_one", robotImage, RobotPosition(0, 0, null),
-      RobotPosition(950, 550, null), RobotPosition(200, 50, null), true),
-    new AutonomousRobot("robot_two", robotImage, RobotPosition(0, 0, null),
-      RobotPosition(950, 550, null), RobotPosition(400, 500, null), false),
-    new AutonomousRobot("robot_three", robotImage, RobotPosition(0, 0, null),
-      RobotPosition(950, 550, null), RobotPosition(600, 50, null), true),
-    new AutonomousRobot("robot_four", robotImage, RobotPosition(0, 0, null),
-      RobotPosition(950, 550, null), RobotPosition(800, 500, null), false)
+    (new AutonomousRobot("robot_one", RobotPosition(50, 100, null),
+      RobotPosition(375, 100, null), false, false), RobotPosition(50, 100, null)),
+    (new AutonomousRobot("robot_two", RobotPosition(50, 325, null),
+      RobotPosition(375, 325, null), false, true), RobotPosition(375, 325, null)),
+    (new AutonomousRobot("robot_three", RobotPosition(500, 50, null),
+      RobotPosition(500, 475, null), true, false), RobotPosition(500, 50, null)),
+    (new AutonomousRobot("robot_four", RobotPosition(700, 50, null),
+      RobotPosition(700, 475, null), true, true), RobotPosition(700, 475, null))
   )
 
+  Timer(1000) {
+    var tmpList: List[(String, RobotPosition)] = List()
+    autonomousRobots.foreach(robots => tmpList ++= List((robots._1.name, robots._2)))
+    stations.foreach(station => {
+      station.updateRobotPositions(tmpList)
+    })
+  }
+
   //  Manual Robot Update
-  Timer(2000) {
+/*  Timer(1000){
+    calculateTriangulation()
+  }*/
+  /*Timer(2000) {
     if(manual_Robot_Position_OLD != manual_Robot.currentPosition){
       manual_Robot.mqtt_publish()
       manual_Robot_Position_OLD = manual_Robot.currentPosition
     }
-  }
+  }*/
 
   Timer(1000) {
-    autonomousRobots.foreach(rbt => {
-      if(rbt.downMovement){
-        rbt.changeYPosition(25, LocalDateTime.now())
+    autonomousRobots.foreach(robotData => {
+      if(robotData._1.vertical){
+        if(robotData._1.reverseMovement){
+          robotData._2.y -= 25
+          robotData._2.timeStampISO = LocalDateTime.now().toString
+        }
+        else{
+          robotData._2.y += 25
+          robotData._2.timeStampISO = LocalDateTime.now().toString
+        }
+        if(robotData._2.y == robotData._1.minPosition.y){
+          robotData._1.reverseMovement = false
+        }
+        else if(robotData._2.y == robotData._1.maxPosition.y){
+          robotData._1.reverseMovement = true
+        }
       }
       else{
-        rbt.changeYPosition(-25, LocalDateTime.now())
+        if(robotData._1.reverseMovement){
+          robotData._2.x -= 25
+          robotData._2.timeStampISO = LocalDateTime.now().toString
+        }
+        else{
+          robotData._2.x += 25
+          robotData._2.timeStampISO = LocalDateTime.now().toString
+        }
+        if(robotData._2.x == robotData._1.minPosition.x){
+          robotData._1.reverseMovement = false
+        }
+        else if(robotData._2.x == robotData._1.maxPosition.x){
+          robotData._1.reverseMovement = true
+        }
       }
-      if(rbt.currentPosition.y == rbt.minPosition.y){
-        rbt.downMovement = true
-      }
-      else if(rbt.currentPosition.y == rbt.maxPosition.y){
-        rbt.downMovement = false
-      }
-      rbt.mqtt_publish()
     })
   }
 
   def updateManualSteeringRobotPosition(event: EventEnumeration, value: Int): Unit = {
-    if(event == EventEnumeration.UP || event == EventEnumeration.DOWN) { manual_Robot.changeYPosition(value, LocalDateTime.now()) }
-    else { manual_Robot.changeXPosition(value, LocalDateTime.now()) }
+    if(event == EventEnumeration.UP || event == EventEnumeration.DOWN) { manual_Robot_Position.y += value }//manual_Robot.changeYPosition(value, LocalDateTime.now()) }
+    else { manual_Robot_Position.x += value }//manual_Robot.changeXPosition(value, LocalDateTime.now()) }
   }
 }
