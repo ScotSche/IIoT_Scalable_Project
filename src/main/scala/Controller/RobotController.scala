@@ -1,9 +1,10 @@
 package Controller
 
 import Controller.EventEnumeration.EventEnumeration
-import Model.Locator.Locator
+import Model.Locator.{Locator, LocatorMaster}
 import Model.Robot.{AutonomousRobot, ManualRobot, Robot, RobotPosition}
 import Model.Timer
+
 import scala.math._
 import java.awt.{Graphics2D, Image}
 import java.time.LocalDateTime
@@ -14,10 +15,7 @@ import javax.swing.ImageIcon
 class RobotController{
 
   // Triangulation Stations
-  var stations: List[Locator] = List(new Locator("Station 1", (0, 0)), new Locator("Station 2", (900, 0)),
-    new Locator("Station 3", (450, 900)))
-
-  //val stations: List[(Int, Int)] = List((0, 0), (900, 0), (450, 900))
+  val locatorMaster: LocatorMaster = new LocatorMaster("locator_master")
 
   //  Robot images
   val robotImageFull = new ImageIcon("src/images/LogBOT4.0_Voll.png").getImage()
@@ -47,9 +45,10 @@ class RobotController{
   Timer(1000) {
     var tmpList: List[(String, RobotPosition)] = List()
     autonomousRobots.foreach(robots => tmpList ++= List((robots._1.name, robots._2)))
-    stations.foreach(station => {
+    locatorMaster.stations.foreach(station => {
       station.updateRobotPositions(tmpList)
     })
+    locatorMaster.gatherRobotDataFromLocator()
   }
 
   //  Manual Robot Update

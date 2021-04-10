@@ -14,13 +14,21 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import java.util.Properties
 import scala.util.parsing.json.JSON
 
-case class RobotDataTransformation(robotName: String, robotDistance: Double, stationName: String, stationPosition: String)//(Int, Int))
+case class RobotDataTransformation(robotName: String, robotDistance: Double, timestamp: String, stationName: String, stationPosition: (Int, Int))
 
 class MQTT_Connector {
+
+  type DoubleTuple = (RobotDataTransformation, RobotDataTransformation)
+
+  type Database = Map[String, Map[String, RobotDataTransformation]]
+
+  type RobotPositionDatabase = Map[String, (Int, Int)]
 
   implicit val system: ActorSystem = ActorSystem()
 
   val triangulation: Triangulation = new Triangulation()
+
+  var robotMap: Database = Map()
 
   //  MQTT Properties
   val connectionSettings = MqttConnectionSettings(
@@ -53,42 +61,36 @@ class MQTT_Connector {
 
     val switchStationWithRobot = builder.add(Flow[Map[String, Any]].map(getRobotData))
 
-    val broadcast = builder.add(Broadcast[List[RobotDataTransformation]](4))
-
-    val robotSpecificationOne = builder.add(Flow[List[RobotDataTransformation]].map(getSpecificRobotData(_, "robot_one")))
-    val robotSpecificationTwo = builder.add(Flow[List[RobotDataTransformation]].map(getSpecificRobotData(_, "robot_two")))
-    val robotSpecificationThree = builder.add(Flow[List[RobotDataTransformation]].map(getSpecificRobotData(_, "robot_three")))
-    val robotSpecificationFour = builder.add(Flow[List[RobotDataTransformation]].map(getSpecificRobotData(_, "robot_four")))
-
-
-
-    val zipOne = builder.add(Zip[RobotDataTransformation, RobotDataTransformation])
-    val zipTwo = builder.add(Zip[RobotDataTransformation, RobotDataTransformation])
-
-    val zipFinal = builder.add(Zip[(RobotDataTransformation, RobotDataTransformation), (RobotDataTransformation, RobotDataTransformation)])
-
-    //val flow = builder.add(Flow[MqttMessage].map(transformToKafka))
+    val updateRobotData = builder.add(Flow[List[RobotDataTransformation]].map(updateRobotDatabaseData))
 
     //  Kafka producer implementation
     //val output = builder.add(Sink.foreach[ProducerRecord[String, RobotPosition]](producer.send(_)))
-    val output = builder.add(Sink.foreach[((RobotDataTransformation, RobotDataTransformation),
-      (RobotDataTransformation, RobotDataTransformation))](println))
+    val output = builder.add(Sink.foreach[Any](println))
 
     //  Combination of components
-    input ~> jsonDeserializer ~> switchStationWithRobot ~> broadcast
-                                 broadcast.out(0) ~> robotSpecificationOne ~> zipOne.in0
-                                 broadcast.out(1) ~> robotSpecificationTwo ~> zipOne.in1
-                                                                              zipOne.out ~> zipFinal.in0
-                                 broadcast.out(2) ~> robotSpecificationThree ~> zipTwo.in0
-                                 broadcast.out(3) ~> robotSpecificationFour ~> zipTwo.in1
-                                                                              zipTwo.out ~> zipFinal.in1
-                                                                                            zipFinal.out ~> output
+    input ~> jsonDeserializer ~> switchStationWithRobot ~>
+      updateRobotData ~> output
 
     ClosedShape
   }
 
   //  Start the transformation graph
   RunnableGraph.fromGraph(graph).run()
+
+  def deserializeJSON(mqttMessage: MqttMessage): Map[String, Any] ={
+    val MQTT_PAYLOAD = mqttMessage.payload.utf8String
+    val result = JSON.parseFull(MQTT_PAYLOAD)
+    result match {
+      case x: Some[Map[String, Any]] => {
+        //println(x.value)
+        x.value
+      }
+      case None => {
+        println("Empty")
+        Map()
+      }
+    }
+  }
 
   def getRobotData(data: Map[String, Any]): List[RobotDataTransformation] ={
     var stationToRobotList: List[RobotDataTransformation] = List()
@@ -114,17 +116,45 @@ class MQTT_Connector {
       robotData.get("distance") match {
         case Some(x: Any) => distance =  x.toString.toDouble
       }
-      stationToRobotList ++= List(RobotDataTransformation(roboName, distance, stationName, stationPosition))
+      stationToRobotList ++= List(RobotDataTransformation(roboName, distance, "", stationName, (0, 0)))
     })
     stationToRobotList
+  }
+
+  def updateRobotDatabaseData(data: List[RobotDataTransformation]): Database ={
+
+    data.foreach(robotData => {
+      if(robotMap.contains(robotData.robotName)){
+        val robotValue: Map[String, RobotDataTransformation] = robotMap(robotData.robotName)
+        if(robotValue.contains(robotData.stationName)){
+          val map = robotValue ++ Map(robotData.stationName -> robotData)
+          robotMap ++= Map(robotData.robotName -> map)
+        }
+        else{
+          val map = robotValue ++ Map(robotData.stationName -> robotData)
+          robotMap ++= Map(robotData.robotName -> map)
+        }
+      }
+      else{
+        robotMap ++= Map(robotData.robotName -> Map(robotData.stationName -> robotData))
+      }
+    })
+    robotMap
   }
 
   def getSpecificRobotData(robotData: List[RobotDataTransformation], name: String): RobotDataTransformation = {
     robotData.foreach(data => {
       if(data.robotName.equals(name)) return data
     })
-    RobotDataTransformation("", 0.0, "", "")
+    RobotDataTransformation("", 0.0, "", "", (0, 0))
   }
+
+  def transformRobotDataToList(data: (DoubleTuple, DoubleTuple)): List[RobotDataTransformation] = {
+    val dataList = List(tuple2ToList(data._1), tuple2ToList(data._2)).flatten
+    dataList
+  }
+
+  def tuple2ToList[T](t: (T, T)): List[T] = List(t._1, t._2)
 
   def transformToKafka(mqttMessage: MqttMessage): ProducerRecord[String, RobotPosition] = {
     print(mqttMessage.topic + " -> " + mqttMessage.payload.utf8String + " | ")
@@ -132,20 +162,5 @@ class MQTT_Connector {
     val payload_split = MQTT_PAYLOAD.split(",")
     val newRobotPosition: RobotPosition = RobotPosition(payload_split(0).toInt, payload_split(1).toInt, payload_split(2))
     new ProducerRecord(TOPIC_METADATA, mqttMessage.topic, newRobotPosition)
-  }
-
-  def deserializeJSON(mqttMessage: MqttMessage): Map[String, Any] ={
-    val MQTT_PAYLOAD = mqttMessage.payload.utf8String
-    val result = JSON.parseFull(MQTT_PAYLOAD)
-    result match {
-      case x: Some[Map[String, Any]] => {
-        //println(x.value)
-        x.value
-      }
-      case None => {
-        println("Empty")
-        Map()
-      }
-    }
   }
 }

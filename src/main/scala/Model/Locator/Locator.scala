@@ -1,20 +1,16 @@
 package Model.Locator
 
-import Model.MQTT_Robot_Client
 import Model.Robot.RobotPosition
-
 import java.time.LocalDateTime
 import scala.math.{pow, sqrt}
 
-class Locator(name:String, position: (Int, Int)) {
-  val mqttRobotClient: MQTT_Robot_Client = new MQTT_Robot_Client(name)
+class Locator(name:String, position: (Int, Int), master: LocatorMaster) {
   var robot_Data: List[(String, Double, String)] = List()
 
-  def mqtt_publish(): Unit = {
-    val mqttPayload = createJSONData()
-    //println(mqttPayload)
-    mqttRobotClient.publish(mqttPayload)
+  def pull_data(): String ={
+    createJSONData()
   }
+
   def updateRobotPositions(preData: List[(String, RobotPosition)]): Unit ={
     var newList: List[(String, Double, String)] = List()
     preData.foreach(data => {
@@ -31,7 +27,6 @@ class Locator(name:String, position: (Int, Int)) {
       newList ++= List((data._1, distance, data._2.timeStampISO))
     })
     robot_Data = newList
-    mqtt_publish()
   }
 
   def createJSONData(): String = s"""
