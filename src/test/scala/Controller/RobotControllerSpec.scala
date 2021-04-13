@@ -1,6 +1,7 @@
 package Controller
 
-import Model.Robot.RobotPosition
+import Factory.Controller.RobotController
+import General.Model.Robot.RobotPosition
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
