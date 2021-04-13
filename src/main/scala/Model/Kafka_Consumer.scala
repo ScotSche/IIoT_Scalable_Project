@@ -8,6 +8,8 @@ import java.util
 
 class Kafka_Consumer {
 
+  //  https://kafka.apache.org/27/documentation/streams/tutorial
+
   val  props: Properties = new Properties()
   props.put("bootstrap.servers", "localhost:9092")
   props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")

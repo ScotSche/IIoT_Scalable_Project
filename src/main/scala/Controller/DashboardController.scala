@@ -21,7 +21,7 @@ class DashboardController(dashboardView: FactoryDashboard) {
   def start(): Unit = {
     while(true){
       println("polling...")
-      val records: ConsumerRecords[String, RobotPosition] = kafka_Consumer.consumer.poll(1000)
+      val records: ConsumerRecords[String, RobotPosition] = kafka_Consumer.consumer.poll(500)
       for (record<-records.asScala){
         //print("MESSAGE: " + record.topic() + " - " + record.key() + " -> " + record.value())
         val newRobotPosition = record.value()

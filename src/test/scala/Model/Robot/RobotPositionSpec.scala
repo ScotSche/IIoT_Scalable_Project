@@ -15,7 +15,7 @@ class RobotPositionSpec extends AnyWordSpec with Matchers {
         target.x should be(50)
         target.y should be(50)
       }
-      "have the timestamp 'as in timestamp'" in {
+      "have the timestamp as in 'timestamp'" in {
         target.timeStampISO should be(timestamp)
       }
     }

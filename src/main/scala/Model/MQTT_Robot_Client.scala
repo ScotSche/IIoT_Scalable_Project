@@ -2,7 +2,7 @@ package Model
 
 import akka.Done
 import akka.actor.ActorSystem
-import akka.stream.alpakka.mqtt.scaladsl.MqttSink
+import akka.stream.alpakka.mqtt.scaladsl.{MqttSink, MqttSource}
 import akka.stream.alpakka.mqtt.{MqttConnectionSettings, MqttMessage, MqttQoS}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.util.ByteString
@@ -22,14 +22,16 @@ class MQTT_Robot_Client(name: String) {
     name,
     new MemoryPersistence
   )
+    .withAutomaticReconnect(true)
+
 
   val sink: Sink[MqttMessage, Future[Done]] = MqttSink(connectionSettings, MqttQoS.AtLeastOnce)
 
-  def publish(payload:String) = {
-    val MQTT_TOPIC = MQTT_BASIC_LEVEL + name
+  def publish(topic: String, payload:String) = {
+    val MQTT_TOPIC = MQTT_BASIC_LEVEL + topic
     val MQTT_PAYLOAD = payload
     val messages = List(MqttMessage(MQTT_TOPIC, ByteString(MQTT_PAYLOAD)))
     Source(messages).runWith(sink)
-    println(name + ": MQTT message sent - " + MQTT_PAYLOAD)
+    println(topic + ": MQTT message sent - " + MQTT_PAYLOAD)
   }
 }

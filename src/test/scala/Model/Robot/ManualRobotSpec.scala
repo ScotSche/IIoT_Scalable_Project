@@ -51,10 +51,6 @@ class ManualRobotSpec extends AnyWordSpec with Matchers {
         target.changeYPosition(100, timeStampISOYInvalid)
         target.currentPosition should be(RobotPosition(75, 75, timestampValid.toString))
       }*/
-
-      "should publish a mqtt message" in {
-        target.mqtt_publish(RobotPosition(0, 0, null))
-      }
     }
   }
 }

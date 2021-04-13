@@ -14,7 +14,9 @@ libraryDependencies ++= Seq(
   "com.lightbend.akka" %% "akka-stream-alpakka-mqtt" % "2.0.2",
   "com.typesafe.akka" %% "akka-stream" % AkkaVersion
 )
-libraryDependencies += "org.apache.kafka" %% "kafka" % "2.6.0"
+libraryDependencies += "org.apache.kafka" % "kafka-streams" % "2.7.0"
+
+libraryDependencies += "org.apache.kafka" %% "kafka" % "2.7.0"
 
 
 coverageExcludedPackages := ".*ControllerMain.*;.*DashboardMain.*;.*RobotMain.*"

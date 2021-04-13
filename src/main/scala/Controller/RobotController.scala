@@ -1,12 +1,10 @@
 package Controller
 
 import Controller.EventEnumeration.EventEnumeration
-import Model.Locator.{Locator, LocatorMaster}
-import Model.Robot.{AutonomousRobot, ManualRobot, Robot, RobotPosition}
+import Model.Locator.LocatorMaster
+import Model.Robot.{AutonomousRobot, ManualRobot, RobotPosition}
 import Model.Timer
-
-import scala.math._
-import java.awt.{Graphics2D, Image}
+import java.awt.Image
 import java.time.LocalDateTime
 import javax.swing.ImageIcon
 
@@ -42,15 +40,6 @@ class RobotController{
       RobotPosition(700, 475, null), true, true), RobotPosition(700, 475, null))
   )
 
-  Timer(1000) {
-    var tmpList: List[(String, RobotPosition)] = List()
-    autonomousRobots.foreach(robots => tmpList ++= List((robots._1.name, robots._2)))
-    locatorMaster.stations.foreach(station => {
-      station.updateRobotPositions(tmpList)
-    })
-    locatorMaster.gatherRobotDataFromLocator()
-  }
-
   //  Manual Robot Update
 /*  Timer(1000){
     calculateTriangulation()
@@ -62,6 +51,11 @@ class RobotController{
     }
   }*/
 
+  Timer(1000){
+    locatorMaster_handler()
+  }
+
+  //  Timer for autonomous robots
   Timer(1000) {
     autonomousRobots.foreach(robotData => {
       if(robotData._1.vertical){
@@ -97,6 +91,15 @@ class RobotController{
         }
       }
     })
+  }
+
+  def locatorMaster_handler(): Unit ={
+    var tmpList: List[(String, RobotPosition)] = List()
+    autonomousRobots.foreach(robots => tmpList ++= List((robots._1.name, robots._2)))
+    locatorMaster.stations.foreach(station => {
+      station.updateRobotPositions(tmpList)
+    })
+    locatorMaster.gatherRobotDataFromLocator()
   }
 
   def updateManualSteeringRobotPosition(event: EventEnumeration, value: Int): Unit = {

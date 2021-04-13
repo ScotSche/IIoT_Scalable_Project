@@ -5,6 +5,11 @@ import Model.{MQTT_Robot_Client, RobotDataTransformation}
 
 import scala.util.parsing.json.JSON
 
+case class MQTTData(topic: String, position: (Int, Int), timestamp: String){
+  override def toString: String = position.toString() + "/" + timestamp
+}
+
+
 class LocatorMaster(name: String) {
 
   val mqttRobotClient: MQTT_Robot_Client = new MQTT_Robot_Client(name)
@@ -30,10 +35,12 @@ class LocatorMaster(name: String) {
     val robotThreePositionList = triangulationOfRobotData(sortedDataMap, "robot_three")
     val robotFourPositionList = triangulationOfRobotData(sortedDataMap, "robot_four")
 
-    println(robotOnePositionList)
-    println(robotTwoPositionList)
-    println(robotThreePositionList)
-    println(robotFourPositionList)
+    val positionList = List(robotOnePositionList, robotTwoPositionList, robotThreePositionList, robotFourPositionList)
+    println("Position list: " + positionList)
+    positionList.foreach(robot => {
+      if(robot.position._1 != -1 && robot.position._2 != -1) mqtt_publish(robot.topic, robot.toString)
+      Thread.sleep(50)
+    })
   }
 
   def deserializeJSON(jsonString: String): Map[String, Any] ={
@@ -99,7 +106,7 @@ class LocatorMaster(name: String) {
     dataMap
   }
 
-  def triangulationOfRobotData(data: Map[String, List[RobotDataTransformation]], name: String): (Int, Int) ={
+  def triangulationOfRobotData(data: Map[String, List[RobotDataTransformation]], name: String): MQTTData ={
     val specificRobotData = data(name)
 
     val stationOne = specificRobotData.filter(x => x.stationName.equals("Station 1")) match {
@@ -120,13 +127,10 @@ class LocatorMaster(name: String) {
     val triangulationThree = triangulation.triangulation(stationOne.stationPosition, stationOne.robotDistance,
       stationThree.stationPosition, stationThree.robotDistance)
 
-    triangulation.evaluateTriangulation(triangulationOne, triangulationTwo, triangulationThree)
+    MQTTData(name, triangulation.evaluateTriangulation(triangulationOne, triangulationTwo, triangulationThree), stationOne.timestamp)
   }
 
-
-  def mqtt_publish(): Unit = {
-    val mqttPayload = ""
-    //println(mqttPayload)
-    mqttRobotClient.publish(mqttPayload)
+  def mqtt_publish(name: String, payload: String): Unit = {
+    mqttRobotClient.publish(name, payload)
   }
 }
