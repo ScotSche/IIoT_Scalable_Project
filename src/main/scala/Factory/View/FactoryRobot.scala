@@ -9,9 +9,10 @@ import General.EventEnumeration.EventEnumeration
 import java.awt.{BasicStroke, Image}
 import javax.swing.ImageIcon
 import scala.swing._
-import scala.swing.event.{Event, Key, KeyPressed}
+import scala.swing.event.{ButtonClicked, Event, Key, KeyPressed}
 
 case class MoveEvent(event: EventEnumeration) extends Event
+case class ClickEvent(mode: Boolean) extends Event
 
 class FactoryRobot(controller: RobotController) extends MainFrame {
   title = "Robotic Factory #1"
@@ -19,18 +20,37 @@ class FactoryRobot(controller: RobotController) extends MainFrame {
   preferredSize = new Dimension(900, 900)
 
   val canvas = new RobotCanvas(controller)
+  val autonomousRadioButton = new RadioButton("Autonomous Mode")
+  autonomousRadioButton.selected = true
+  autonomousRadioButton.focusable = false
+  val manualRadioButton = new RadioButton("Manual Mode")
+  manualRadioButton.focusable = false
+  val modeGroup = new ButtonGroup(autonomousRadioButton, manualRadioButton)
 
   contents = new BoxPanel(Orientation.Vertical) {
     contents += canvas
+    contents += new BoxPanel(Orientation.Horizontal) {
+      contents += manualRadioButton
+      contents += autonomousRadioButton
+    }
   }
 
-  listenTo(canvas)
+  listenTo(canvas, autonomousRadioButton, manualRadioButton)
   reactions += {
     case MoveEvent(event: EventEnumeration) => {
       if(event == EventEnumeration.UP) controller.updateManualSteeringRobotPosition(event, -25)
       else if(event == EventEnumeration.DOWN) controller.updateManualSteeringRobotPosition(event, 25)
       else if(event == EventEnumeration.LEFT) controller.updateManualSteeringRobotPosition(event, -25)
       else if(event == EventEnumeration.RIGHT) controller.updateManualSteeringRobotPosition(event, 25)
+      canvas.repaint()
+    }
+    case ButtonClicked(button) => {
+      if(button.equals(manualRadioButton)){
+        controller.mode = true
+      }
+      else {
+        controller.mode = false
+      }
       canvas.repaint()
     }
   }
@@ -65,29 +85,32 @@ class RobotCanvas(controller: RobotController) extends Component {
 
     //  Manual robot drawing
     //g.drawImage(controller.manual_Robot.image_Full, controller.manual_Robot.currentPosition.x, controller.manual_Robot.currentPosition.y, null)
-    g.drawImage(controller.robotImageFull, controller.manual_Robot_Position.x, controller.manual_Robot_Position.y, null)
-
-    // Autonomous robots drawing
-    controller.autonomousRobots.foreach{
-      autonomousRobot: (AutonomousRobot, RobotPosition) => {
-        var image = new ImageIcon().getImage
-        if(autonomousRobot._1.vertical){
-          if(autonomousRobot._1.reverseMovement){
-            image = controller.robotImageEmpty
+    if(controller.mode) {
+      g.drawImage(controller.robotImageFull, controller.manual_Robot_Position.x, controller.manual_Robot_Position.y, null)
+    }
+    else {
+      // Autonomous robots drawing
+      controller.autonomousRobots.foreach{
+        autonomousRobot: (AutonomousRobot, RobotPosition) => {
+          var image = new ImageIcon().getImage
+          if (autonomousRobot._1.vertical) {
+            if (autonomousRobot._1.reverseMovement) {
+              image = controller.robotImageEmpty
+            }
+            else {
+              image = controller.robotImageFull
+            }
           }
-          else{
-            image = controller.robotImageFull
+          else {
+            if (autonomousRobot._1.reverseMovement) {
+              image = controller.robotImageEmpty
+            }
+            else {
+              image = controller.robotImageFull
+            }
           }
+          g.drawImage(image, autonomousRobot._2.x, autonomousRobot._2.y, null)
         }
-        else{
-          if(autonomousRobot._1.reverseMovement){
-            image = controller.robotImageEmpty
-          }
-          else{
-            image = controller.robotImageFull
-          }
-        }
-        g.drawImage(image, autonomousRobot._2.x, autonomousRobot._2.y, null)
       }
     }
   }

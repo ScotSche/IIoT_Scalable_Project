@@ -1,6 +1,6 @@
 package Bridge.Model
 
-import General.Model.Robot.RobotPosition
+import General.Model.Robot.{RobotDataTransformation, RobotPosition}
 import General.Model.Serializer.Triangulation
 import akka.NotUsed
 import akka.actor.ActorSystem
@@ -12,8 +12,6 @@ import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 
 import java.util.Properties
-
-case class RobotDataTransformation(robotName: String, robotDistance: Double, timestamp: String, stationName: String, stationPosition: (Int, Int))
 
 class MQTT_Connector {
 

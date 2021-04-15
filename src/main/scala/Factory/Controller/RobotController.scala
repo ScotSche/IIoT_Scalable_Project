@@ -1,6 +1,5 @@
 package Factory.Controller
 
-import General.EventEnumeration
 import General.Model.Locator.LocatorMaster
 import General.Model.Robot.{AutonomousRobot, ManualRobot, RobotPosition}
 import General.Model.Timer
@@ -24,9 +23,11 @@ class RobotController{
   val robotImageEmpty = new ImageIcon("src/images/LogBOT4.0_Leer.png").getImage()
     .getScaledInstance(50, 50, Image.SCALE_DEFAULT)
 
+  //  Mode in View
+  var mode: Boolean = false
+
   // Manual Robot Position
   var manual_Robot_Position = RobotPosition(650, 750, null)
-  var manual_Robot_Position_OLD = manual_Robot_Position
 
   //  Definition of manual robot
   var manual_Robot = new ManualRobot("robot_manual", null, null)
@@ -43,70 +44,76 @@ class RobotController{
       RobotPosition(700, 475, null), true, true), RobotPosition(700, 475, null))
   )
 
-  //  Manual Robot Update
-/*  Timer(1000){
-    calculateTriangulation()
-  }*/
-  /*Timer(2000) {
-    if(manual_Robot_Position_OLD != manual_Robot.currentPosition){
-      manual_Robot.mqtt_publish()
-      manual_Robot_Position_OLD = manual_Robot.currentPosition
-    }
-  }*/
-
+  //  Handler for autonomous vs. manual mode
   Timer(1000){
-    locatorMaster_handler()
+    if(mode){ locatorMasterManual_handler() } else { locatorMasterAutonomous_handler() }
   }
 
   //  Timer for autonomous robots
   Timer(1000) {
-    autonomousRobots.foreach(robotData => {
-      if(robotData._1.vertical){
-        if(robotData._1.reverseMovement){
-          robotData._2.y -= 25
-          robotData._2.timeStampISO = LocalDateTime.now().toString
+    if( !mode) {
+      autonomousRobots.foreach(robotData => {
+        if (robotData._1.vertical) {
+          if (robotData._1.reverseMovement) {
+            robotData._2.y -= 25
+            robotData._2.timeStampISO = LocalDateTime.now().toString
+          }
+          else {
+            robotData._2.y += 25
+            robotData._2.timeStampISO = LocalDateTime.now().toString
+          }
+          if (robotData._2.y == robotData._1.minPosition.y) {
+            robotData._1.reverseMovement = false
+          }
+          else if (robotData._2.y == robotData._1.maxPosition.y) {
+            robotData._1.reverseMovement = true
+          }
         }
-        else{
-          robotData._2.y += 25
-          robotData._2.timeStampISO = LocalDateTime.now().toString
+        else {
+          if (robotData._1.reverseMovement) {
+            robotData._2.x -= 25
+            robotData._2.timeStampISO = LocalDateTime.now().toString
+          }
+          else {
+            robotData._2.x += 25
+            robotData._2.timeStampISO = LocalDateTime.now().toString
+          }
+          if (robotData._2.x == robotData._1.minPosition.x) {
+            robotData._1.reverseMovement = false
+          }
+          else if (robotData._2.x == robotData._1.maxPosition.x) {
+            robotData._1.reverseMovement = true
+          }
         }
-        if(robotData._2.y == robotData._1.minPosition.y){
-          robotData._1.reverseMovement = false
-        }
-        else if(robotData._2.y == robotData._1.maxPosition.y){
-          robotData._1.reverseMovement = true
-        }
-      }
-      else{
-        if(robotData._1.reverseMovement){
-          robotData._2.x -= 25
-          robotData._2.timeStampISO = LocalDateTime.now().toString
-        }
-        else{
-          robotData._2.x += 25
-          robotData._2.timeStampISO = LocalDateTime.now().toString
-        }
-        if(robotData._2.x == robotData._1.minPosition.x){
-          robotData._1.reverseMovement = false
-        }
-        else if(robotData._2.x == robotData._1.maxPosition.x){
-          robotData._1.reverseMovement = true
-        }
-      }
-    })
+      })
+    }
   }
 
-  def locatorMaster_handler(): Unit ={
+  def locatorMasterAutonomous_handler(): Unit = {
     var tmpList: List[(String, RobotPosition)] = List()
     autonomousRobots.foreach(robots => tmpList ++= List((robots._1.name, robots._2)))
     locatorMaster.stations.foreach(station => {
       station.updateRobotPositions(tmpList)
     })
-    locatorMaster.gatherRobotDataFromLocator()
+    locatorMaster.gatherAutonomousRobotDataFromLocator()
+  }
+
+  def locatorMasterManual_handler(): Unit = {
+    val tmpList: List[(String, RobotPosition)] = List((manual_Robot.name, manual_Robot_Position))
+    locatorMaster.stations.foreach(station => {
+      station.updateRobotPositions(tmpList)
+    })
+    locatorMaster.gatherManualRobotDataFromLocator()
   }
 
   def updateManualSteeringRobotPosition(event: EventEnumeration, value: Int): Unit = {
-    if(event == EventEnumeration.UP || event == EventEnumeration.DOWN) { manual_Robot_Position.y += value }//manual_Robot.changeYPosition(value, LocalDateTime.now()) }
-    else { manual_Robot_Position.x += value }//manual_Robot.changeXPosition(value, LocalDateTime.now()) }
+    if(event == EventEnumeration.UP || event == EventEnumeration.DOWN) {
+      manual_Robot_Position.y += value
+      manual_Robot_Position.timeStampISO = LocalDateTime.now().toString
+    }
+    else {
+      manual_Robot_Position.x += value
+      manual_Robot_Position.timeStampISO = LocalDateTime.now().toString
+    }
   }
 }

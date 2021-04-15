@@ -1,14 +1,10 @@
 package General.Model.Locator
 
-import Bridge.Model.RobotDataTransformation
 import Factory.Model.MQTT_Robot_Client
+import General.Model.Robot.{MQTTData, RobotDataTransformation}
 import General.Model.Serializer.Triangulation
 
 import scala.util.parsing.json.JSON
-
-case class MQTTData(topic: String, position: (Int, Int), timestamp: String){
-  override def toString: String = position.toString() + "/" + timestamp
-}
 
 
 class LocatorMaster(name: String) {
@@ -22,7 +18,26 @@ class LocatorMaster(name: String) {
   val stations: List[Locator] = List(new Locator("Station 1", (0, 0), this), new Locator("Station 2", (900, 0), this),
     new Locator("Station 3", (450, 900), this))
 
-  def gatherRobotDataFromLocator(): Unit = {
+  def gatherManualRobotDataFromLocator(): Unit = {
+    var robotMasterList: List[RobotDataTransformation] = List()
+    stations.foreach(locator => {
+      val data = locator.pull_data()
+      val jsonObject = deserializeJSON(data)
+      val robotData = getRobotData(jsonObject)
+      robotMasterList ++= robotData
+    })
+    val extractionForManualMode = robotMasterList.map(x => (x.stationName, x.robotDistance))
+    val sortedDataMap = sortDataToRobots(robotMasterList)
+    val manualRobotPositionList = triangulationOfRobotData(sortedDataMap, "robot_manual")
+
+    var tmpString = ""
+    extractionForManualMode.foreach(x => tmpString += x._1 + ":" + x._2.toString + ";")
+
+    val specificMQTTPayload = manualRobotPositionList.toString + "/" + tmpString
+    mqtt_publish(manualRobotPositionList.topic, specificMQTTPayload)
+  }
+
+  def gatherAutonomousRobotDataFromLocator(): Unit = {
     var robotMasterList: List[RobotDataTransformation] = List()
     stations.foreach(locator => {
       val data = locator.pull_data()
@@ -37,7 +52,6 @@ class LocatorMaster(name: String) {
     val robotFourPositionList = triangulationOfRobotData(sortedDataMap, "robot_four")
 
     val positionList = List(robotOnePositionList, robotTwoPositionList, robotThreePositionList, robotFourPositionList)
-    println("Position list: " + positionList)
     positionList.foreach(robot => {
       if(robot.position._1 != -1 && robot.position._2 != -1) mqtt_publish(robot.topic, robot.toString)
       Thread.sleep(50)
@@ -47,16 +61,11 @@ class LocatorMaster(name: String) {
   def deserializeJSON(jsonString: String): Map[String, Any] ={
     val result = JSON.parseFull(jsonString)
     result match {
-      case x: Some[Map[String, Any]] => {
-        //println(x.value)
-        x.value
-      }
-      case None => {
-        println("Empty")
-        Map()
-      }
+      case x: Some[Map[String, Any]] => x.value
+      case None => Map()
     }
   }
+
   def getRobotData(data: Map[String, Any]): List[RobotDataTransformation] ={
     var stationToRobotList: List[RobotDataTransformation] = List()
     val robotMap = data.get("mqttdata") match {
@@ -103,7 +112,7 @@ class LocatorMaster(name: String) {
         dataMap ++= Map(robotData.robotName -> List(robotData))
       }
     })
-    println(dataMap)
+    //println(dataMap)
     dataMap
   }
 
