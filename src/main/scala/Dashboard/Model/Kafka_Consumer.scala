@@ -1,6 +1,6 @@
 package Dashboard.Model
 
-import Robots.MQTTData
+import Business.MQTTData
 import org.apache.kafka.clients.consumer.KafkaConsumer
 
 import java.util

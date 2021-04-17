@@ -1,7 +1,6 @@
 package Dashboard.View
 
-import Business.Timer
-import Robots.{MQTTData, RobotPosition}
+import Business.{MQTTData, Timer}
 
 import java.awt.geom.Ellipse2D
 import java.awt.{BasicStroke, Color, Image}

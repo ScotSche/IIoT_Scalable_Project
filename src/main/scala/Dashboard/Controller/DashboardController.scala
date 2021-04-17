@@ -1,8 +1,8 @@
 package Dashboard.Controller
 
+import Business.MQTTData
 import Dashboard.Model.Kafka_Consumer
 import Dashboard.View.FactoryDashboard
-import Robots.{MQTTData, RobotPosition}
 import org.apache.kafka.clients.consumer.ConsumerRecords
 
 import scala.jdk.CollectionConverters.iterableAsScalaIterableConverter

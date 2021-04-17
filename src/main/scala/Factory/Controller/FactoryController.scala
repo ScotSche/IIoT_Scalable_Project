@@ -7,11 +7,11 @@ import java.awt.Image
 import java.time.LocalDateTime
 import javax.swing.ImageIcon
 import EventEnumeration.EventEnumeration
-import Robots.{AutonomousRobot, ManualRobot, RobotPosition}
+import Factory.Model.Robot.{AutonomousRobot, ManualRobot, RobotPosition}
 
 //  http://walter.bislins.ch/blog/index.asp?page=Schnittpunkte+zweier+Kreise+berechnen+%28JavaScript%29#H_Rechenformular
 
-class RobotController{
+class FactoryController{
 
   // Triangulation Stations
   val locatorMaster: LocatorMaster = new LocatorMaster("locator_master")

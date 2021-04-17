@@ -10,7 +10,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 
 import scala.concurrent.Future
 
-class MQTT_Robot_Client(name: String) {
+class MQTT_Client(name: String) {
 
   implicit val system: ActorSystem = ActorSystem()
 

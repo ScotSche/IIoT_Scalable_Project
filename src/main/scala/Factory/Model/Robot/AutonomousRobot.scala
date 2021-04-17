@@ -1,12 +1,10 @@
-package Robots
+package Factory.Model.Robot
 
-import Factory.Model.MQTT_Robot_Client
-
-import java.awt.Image
+import Factory.Model.MQTT_Client
 
 class AutonomousRobot(override val name: String, override val minPosition: RobotPosition,
                       override val maxPosition: RobotPosition, val vertical: Boolean,
                       var reverseMovement: Boolean) extends Robot{
 
-  val mqttRobotClient = new MQTT_Robot_Client(name)
+  val mqttRobotClient = new MQTT_Client(name)
 }

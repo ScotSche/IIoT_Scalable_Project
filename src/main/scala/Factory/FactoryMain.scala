@@ -1,12 +1,12 @@
 package Factory
 
-import Factory.Controller.RobotController
+import Factory.Controller.FactoryController
 import View.FactoryRobot
 
-object RobotMain {
+object FactoryMain {
 
   //  Controller
-  val controller: RobotController = new RobotController()
+  val controller: FactoryController = new FactoryController()
 
   //  Views
   val robotView: FactoryRobot = new FactoryRobot(controller)

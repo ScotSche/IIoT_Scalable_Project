@@ -1,15 +1,15 @@
 package Business.Locator
 
-import Business.Triangulation
-import Factory.Model.MQTT_Robot_Client
-import Robots.{MQTTData, RobotDataTransformation}
+import Bridge.Model.RobotDataTransformation
+import Business.{MQTTData, Triangulation}
+import Factory.Model.MQTT_Client
 
 import scala.util.parsing.json.JSON
 
 
 class LocatorMaster(name: String) {
 
-  val mqttRobotClient: MQTT_Robot_Client = new MQTT_Robot_Client(name)
+  val mqttRobotClient: MQTT_Client = new MQTT_Client(name)
   val triangulation: Triangulation = new Triangulation
 
   type TriangulationData = (String, (Int, Int), Double)

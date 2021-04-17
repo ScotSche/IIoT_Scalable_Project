@@ -1,6 +1,6 @@
 package Business.Serializer
 
-import Robots.MQTTData
+import Business.MQTTData
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.{DefaultScalaModule, ScalaObjectMapper}
 import org.apache.kafka.common.serialization.Serializer

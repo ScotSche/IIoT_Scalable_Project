@@ -1,6 +1,6 @@
 package Business
 
-import Robots.RobotDataTransformation
+import Bridge.Model.RobotDataTransformation
 
 import scala.math.{pow, sqrt}
 

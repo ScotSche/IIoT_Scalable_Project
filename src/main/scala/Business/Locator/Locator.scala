@@ -1,6 +1,6 @@
 package Business.Locator
 
-import Robots.RobotPosition
+import Factory.Model.Robot.RobotPosition
 
 import java.time.LocalDateTime
 import scala.math.{pow, sqrt}

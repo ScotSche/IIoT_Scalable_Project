@@ -1,9 +1,9 @@
 package Factory.View
 
 import Business.{EventEnumeration, Timer}
-import Factory.Controller.RobotController
+import Factory.Controller.FactoryController
 import EventEnumeration.EventEnumeration
-import Robots.{AutonomousRobot, RobotPosition}
+import Factory.Model.Robot.{AutonomousRobot, RobotPosition}
 
 import java.awt.{BasicStroke, Image}
 import javax.swing.ImageIcon
@@ -13,7 +13,7 @@ import scala.swing.event.{ButtonClicked, Event, Key, KeyPressed}
 case class MoveEvent(event: EventEnumeration) extends Event
 case class ClickEvent(mode: Boolean) extends Event
 
-class FactoryRobot(controller: RobotController) extends MainFrame {
+class FactoryRobot(controller: FactoryController) extends MainFrame {
   title = "Robotic Factory #1"
 
   preferredSize = new Dimension(900, 900)
@@ -58,7 +58,7 @@ class FactoryRobot(controller: RobotController) extends MainFrame {
   }
 }
 
-class RobotCanvas(controller: RobotController) extends Component {
+class RobotCanvas(controller: FactoryController) extends Component {
 
   focusable = true
   val factoryImage = new ImageIcon("src/images/factoryimage.jpeg").getImage()

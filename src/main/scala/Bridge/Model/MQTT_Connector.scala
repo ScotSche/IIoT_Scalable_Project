@@ -1,7 +1,6 @@
 package Bridge.Model
 
-import Business.Triangulation
-import Robots.{MQTTData, RobotDataTransformation}
+import Business.{MQTTData, Triangulation}
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.ClosedShape
