@@ -1,4 +1,4 @@
-package General.Model.Robot
+package Robots
 
 import Factory.Model.MQTT_Robot_Client
 

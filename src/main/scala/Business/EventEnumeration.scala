@@ -1,4 +1,4 @@
-package General
+package Business
 
 object EventEnumeration extends Enumeration {
   type EventEnumeration = Value

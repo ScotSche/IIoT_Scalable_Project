@@ -1,10 +1,8 @@
-package General.Model.Serializer
+package Business
 
-
-import Bridge.Model.RobotDataTransformation
+import Robots.RobotDataTransformation
 
 import scala.math.{pow, sqrt}
-import scala.util.parsing.json.JSON
 
 class Triangulation {
 

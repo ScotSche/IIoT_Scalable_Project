@@ -1,4 +1,4 @@
-package General.Model.Robot
+package Robots
 
 trait Robot {
   def name: String

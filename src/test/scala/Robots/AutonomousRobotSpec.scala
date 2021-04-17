@@ -1,4 +1,4 @@
-package General.Model.Robot
+package Robots
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec

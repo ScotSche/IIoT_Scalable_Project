@@ -1,14 +1,13 @@
 package Factory.Controller
 
-import General.Model.Locator.LocatorMaster
-import General.Model.Robot.{AutonomousRobot, ManualRobot, RobotPosition}
-import General.Model.Timer
+import Business.Locator.LocatorMaster
+import Business.{EventEnumeration, Timer}
 
 import java.awt.Image
 import java.time.LocalDateTime
 import javax.swing.ImageIcon
-import General.EventEnumeration
-import General.EventEnumeration.EventEnumeration
+import EventEnumeration.EventEnumeration
+import Robots.{AutonomousRobot, ManualRobot, RobotPosition}
 
 //  http://walter.bislins.ch/blog/index.asp?page=Schnittpunkte+zweier+Kreise+berechnen+%28JavaScript%29#H_Rechenformular
 
@@ -27,21 +26,25 @@ class RobotController{
   var mode: Boolean = false
 
   // Manual Robot Position
-  var manual_Robot_Position = RobotPosition(650, 750, null)
+  var manual_Robot_Position = RobotPosition(650 + 25, 750 + 25, null)
 
   //  Definition of manual robot
   var manual_Robot = new ManualRobot("robot_manual", null, null)
 
   //  Definition of autonomous robots
   var autonomousRobots = List(
-    (new AutonomousRobot("robot_one", RobotPosition(50, 100, null),
-      RobotPosition(375, 100, null), false, false), RobotPosition(50, 100, null)),
-    (new AutonomousRobot("robot_two", RobotPosition(50, 325, null),
-      RobotPosition(375, 325, null), false, true), RobotPosition(375, 325, null)),
-    (new AutonomousRobot("robot_three", RobotPosition(500, 50, null),
-      RobotPosition(500, 475, null), true, false), RobotPosition(500, 50, null)),
-    (new AutonomousRobot("robot_four", RobotPosition(700, 50, null),
-      RobotPosition(700, 475, null), true, true), RobotPosition(700, 475, null))
+    (new AutonomousRobot("robot_one", RobotPosition(50 + 25, 100 + 25, null),
+      RobotPosition(375 + 25, 100 + 25, null), false, false),
+      RobotPosition(50 + 25, 100 + 25, null)),
+    (new AutonomousRobot("robot_two", RobotPosition(50 + 25, 325 + 25, null),
+      RobotPosition(375 + 25, 325 + 25, null), false, true),
+      RobotPosition(375 + 25, 325 + 25, null)),
+    (new AutonomousRobot("robot_three", RobotPosition(500 + 25, 50 + 25, null),
+      RobotPosition(500 + 25, 475 + 25, null), true, false),
+      RobotPosition(500 + 25, 50 + 25, null)),
+    (new AutonomousRobot("robot_four", RobotPosition(700 + 25, 50 + 25, null),
+      RobotPosition(700 + 25, 475 + 25, null), true, true),
+      RobotPosition(700 + 25, 475 + 25, null))
   )
 
   //  Handler for autonomous vs. manual mode

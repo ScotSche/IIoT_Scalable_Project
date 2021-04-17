@@ -1,10 +1,10 @@
-package General.Model
+package Business
 
 import java.awt.event.ActionEvent
 import javax.swing.{AbstractAction, Timer}
 
 object Timer {
-  def apply(interval: Int, repeats: Boolean = true)(op: => Unit): Unit ={
+  def apply(interval: Int, repeats: Boolean = true)(op: => Unit): Unit = {
     val timeOut = new AbstractAction() {
       override def actionPerformed(e: ActionEvent): Unit = op
     }

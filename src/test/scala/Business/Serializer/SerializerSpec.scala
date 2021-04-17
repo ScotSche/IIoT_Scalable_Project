@@ -1,6 +1,6 @@
-package General.Model.Serializer
+package Business.Serializer
 
-import General.Model.Robot.RobotPosition
+import Robots.RobotPosition
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

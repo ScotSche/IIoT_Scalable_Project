@@ -1,10 +1,9 @@
 package Factory.View
 
+import Business.{EventEnumeration, Timer}
 import Factory.Controller.RobotController
-import General.EventEnumeration
-import General.Model.Robot.{AutonomousRobot, RobotPosition}
-import General.Model.Timer
-import General.EventEnumeration.EventEnumeration
+import EventEnumeration.EventEnumeration
+import Robots.{AutonomousRobot, RobotPosition}
 
 import java.awt.{BasicStroke, Image}
 import javax.swing.ImageIcon
@@ -86,7 +85,7 @@ class RobotCanvas(controller: RobotController) extends Component {
     //  Manual robot drawing
     //g.drawImage(controller.manual_Robot.image_Full, controller.manual_Robot.currentPosition.x, controller.manual_Robot.currentPosition.y, null)
     if(controller.mode) {
-      g.drawImage(controller.robotImageFull, controller.manual_Robot_Position.x, controller.manual_Robot_Position.y, null)
+      g.drawImage(controller.robotImageFull, controller.manual_Robot_Position.x - 25, controller.manual_Robot_Position.y - 25, null)
     }
     else {
       // Autonomous robots drawing
@@ -109,7 +108,7 @@ class RobotCanvas(controller: RobotController) extends Component {
               image = controller.robotImageFull
             }
           }
-          g.drawImage(image, autonomousRobot._2.x, autonomousRobot._2.y, null)
+          g.drawImage(image, autonomousRobot._2.x - 25, autonomousRobot._2.y - 25, null)
         }
       }
     }

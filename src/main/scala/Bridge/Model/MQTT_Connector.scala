@@ -1,7 +1,7 @@
 package Bridge.Model
 
-import General.Model.Robot.{RobotDataTransformation, RobotPosition}
-import General.Model.Serializer.Triangulation
+import Business.Triangulation
+import Robots.{MQTTData, RobotDataTransformation}
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.ClosedShape
@@ -12,6 +12,7 @@ import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 
 import java.util.Properties
+import scala.util.parsing.json.JSON
 
 class MQTT_Connector {
 
@@ -40,9 +41,9 @@ class MQTT_Connector {
   val props: Properties = new Properties()
   props.put("bootstrap.servers", "localhost:9092")
   props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
-  props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
+  props.put("value.serializer", "Business.Serializer.MessageSerializer")
 
-  val producer: KafkaProducer[String, String] = new KafkaProducer[String, String](props)
+  val producer: KafkaProducer[String, MQTTData] = new KafkaProducer[String, MQTTData](props)
   val TOPIC_METADATA: String = "robot_positioning_from_factory"
 
   val graph = GraphDSL.create() { implicit builder: GraphDSL.Builder[NotUsed] =>
@@ -53,14 +54,16 @@ class MQTT_Connector {
     val input = builder.add(MqttSource.atMostOnce(connectionSettings.withClientId(clientId = "mqtt_position_consumer"),
         MqttSubscriptions(MQTT_TOPIC -> MqttQoS.AtLeastOnce), bufferSize = 8))
 
+    val deserializer = builder.add(Flow[MqttMessage].map(deserializeJson))
+
     //  Kafka transformation
-    val prepareKafkaMessage = builder.add(Flow[MqttMessage].map(transformToKafka))
+    val prepareKafkaMessage = builder.add(Flow[Map[String, Any]].map(transformToKafka))
 
     //  Kafka producer implementation
-    val output = builder.add(Sink.foreach[ProducerRecord[String, String]](producer.send(_)))
+    val output = builder.add(Sink.foreach[ProducerRecord[String, MQTTData]](producer.send(_)))
 
     //  Combination of components
-    input ~> prepareKafkaMessage ~> output
+    input ~> deserializer ~> prepareKafkaMessage ~> output
 
     ClosedShape
   }
@@ -68,15 +71,34 @@ class MQTT_Connector {
   //  Start the transformation graph
   RunnableGraph.fromGraph(graph).run()
 
-  def transformToKafka(mqttMessage: MqttMessage): ProducerRecord[String, String] = {
-    print(mqttMessage.topic + " -> " + mqttMessage.payload.utf8String)
+  def deserializeJson(mqttMessage: MqttMessage): Map[String, Any] = {
     val MQTT_PAYLOAD = mqttMessage.payload.utf8String
-    val payloadChange = MQTT_PAYLOAD.split("/")
-    val payloadPosition = payloadChange(0).toString.substring(1).substring(0, payloadChange(0).length - 2).split(",").toList.map(x => x.toInt) match {
-      case List(a, b) => (a, b)
+    println(MQTT_PAYLOAD)
+    val result = JSON.parseFull(MQTT_PAYLOAD)
+    result match {
+      case x: Some[Map[String, Any]] => x.value
+      case None => Map()
     }
-    val payloadTimestamp = payloadChange(1)
-    val newRobotPosition: RobotPosition = RobotPosition(payloadPosition._1, payloadPosition._2, payloadTimestamp)
-    new ProducerRecord(TOPIC_METADATA, mqttMessage.topic, newRobotPosition.toString)
+  }
+
+  def transformToKafka(jsonData: Map[String, Any]): ProducerRecord[String, MQTTData] = {
+
+    val robotMap = jsonData.get("mqttdata") match {
+      case Some(x: Map[String, Any]) => x
+    }
+    val topic: String = robotMap.get("topic").getOrElse("null").toString
+    println(topic)
+    val position: (Int, Int) = robotMap.get("position").getOrElse(List()) match {
+      case List(a: Double, b: Double) => (a.toInt, b.toInt)
+    }
+    val timestamp: String = robotMap.get("timestamp") match {
+      case Some(x) => if(x != "null") x.toString else "null"
+    }
+    val triangulation: String = robotMap.get("triangulation") match {
+      case Some(x) => if(x != "null") x.toString else "null"
+    }
+
+    val newRobotDate: MQTTData = MQTTData(topic, position, timestamp, triangulation)
+    new ProducerRecord(TOPIC_METADATA, topic, newRobotDate)
   }
 }
