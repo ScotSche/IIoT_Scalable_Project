@@ -151,7 +151,6 @@ class LocatorMaster(name: String) {
   |}""".stripMargin.trim.replaceAll("\r\n", " ")
 
   def mqtt_publish(name: String, payload: String): Unit = {
-    println(payload)
     mqttRobotClient.publish(name, payload)
   }
 }

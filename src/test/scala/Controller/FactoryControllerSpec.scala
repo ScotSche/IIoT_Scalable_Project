@@ -8,7 +8,7 @@ import org.scalatest.wordspec.AnyWordSpec
 class FactoryControllerSpec extends AnyWordSpec with Matchers {
   "A robot controller" when {
     "initialized" should {
-      val target = new FactoryController
+      //val target = new FactoryController
     }
   }
 }
