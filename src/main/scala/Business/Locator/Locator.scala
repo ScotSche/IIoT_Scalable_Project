@@ -31,25 +31,23 @@ class Locator(name:String, position: (Int, Int), master: LocatorMaster) {
   }
 
   def createJSONData(): String = s"""
-  {
-    "mqttdata": {
-      "name": "$name",
-      "position": "$position",
-      "timestamp": "${LocalDateTime.now().toString}",
-      "robotdata": [
-        ${createJSONMetaData()}
-      ]
-    }
-  }
-  """.strip()
+  |{
+  |  "mqttdata": {
+  |    "name": "$name",
+  |    "position": "$position",
+  |    "timestamp": "${LocalDateTime.now().toString}",
+  |    "robotdata": [
+  |      ${createJSONMetaData()}
+  |    ]
+  |  }
+  |}""".stripMargin.trim.replaceAll("\r\n", " ")
 
   def getJSONMetaData(data: (String, Double, String)): String = s"""
-  {
-    "name": "${data._1}",
-    "distance": "${data._2}",
-    "timestamp": "${data._3}"
-  }
-  """.strip()
+  |{
+  |  "name": "${data._1}",
+  |  "distance": "${data._2}",
+  |  "timestamp": "${data._3}"
+  |}""".stripMargin.replaceAll("\r\n", " ")
 
   def createJSONMetaData(): String = {
     var string = ""

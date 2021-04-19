@@ -141,17 +141,17 @@ class LocatorMaster(name: String) {
   }
 
   def createMQTTPayload(robot: MQTTData): String = s"""
-  {
-    "mqttdata": {
-      "topic": "${robot.topic}",
-      "position": [${robot.position._1} , ${robot.position._2}],
-      "timestamp": "${robot.timestamp}",
-      "triangulation": "${robot.triangulation}"
-    }
-  }
-  """.strip()
+  |{
+  |  "mqttdata": {
+  |    "topic": "${robot.topic}",
+  |    "position": [${robot.position._1} , ${robot.position._2}],
+  |    "timestamp": "${robot.timestamp}",
+  |    "triangulation": "${robot.triangulation}"
+  |  }
+  |}""".stripMargin.trim.replaceAll("\r\n", " ")
 
   def mqtt_publish(name: String, payload: String): Unit = {
+    println(payload)
     mqttRobotClient.publish(name, payload)
   }
 }
