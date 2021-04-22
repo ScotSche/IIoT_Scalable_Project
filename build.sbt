@@ -19,4 +19,4 @@ libraryDependencies += "org.apache.kafka" % "kafka-streams" % "2.7.0"
 libraryDependencies += "org.apache.kafka" %% "kafka" % "2.7.0"
 
 
-coverageExcludedPackages := ".*ControllerMain.*;.*DashboardMain.*;.*RobotMain.*"
+coverageExcludedPackages := ".*ControllerMain.*;.*DashboardMain.*;.*FactoryMain.*"
