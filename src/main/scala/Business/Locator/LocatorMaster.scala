@@ -33,6 +33,7 @@ class LocatorMaster(name: String) {
     var tmpString = ""
     extractionForManualMode.foreach(x => tmpString += x._1 + ":" + x._2.toString + ";")
     manualRobotPosition.triangulation = tmpString
+    //print(tmpString)
 
     mqtt_publish(manualRobotPosition.topic, createMQTTPayload(manualRobotPosition))
   }

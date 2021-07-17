@@ -31,6 +31,6 @@ class MQTT_Client(name: String) {
     val MQTT_PAYLOAD = payload
     val messages = List(MqttMessage(MQTT_TOPIC, ByteString(MQTT_PAYLOAD)))
     Source(messages).runWith(sink)
-    //println(topic + ": MQTT message sent - " + MQTT_PAYLOAD)
+    println(topic + ": MQTT message sent - " + MQTT_PAYLOAD)
   }
 }

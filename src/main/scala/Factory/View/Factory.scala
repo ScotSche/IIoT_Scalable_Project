@@ -61,7 +61,7 @@ class FactoryRobot(controller: FactoryController) extends MainFrame {
 class RobotCanvas(controller: FactoryController) extends Component {
 
   focusable = true
-  val factoryImage = new ImageIcon("src/images/factoryimage.jpeg").getImage()
+  val factoryImage = new ImageIcon("src/images/Lagerhalle_real.png").getImage()
     .getScaledInstance(800, 800, Image.SCALE_DEFAULT)
 
   listenTo(keys)
